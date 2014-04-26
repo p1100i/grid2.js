@@ -1,0 +1,2 @@
+- 0.0.1
+  - skeleton files for browserify/npm packaging
