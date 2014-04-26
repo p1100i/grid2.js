@@ -1,0 +1,116 @@
+div#app-container {
+  display     : inline-block;
+  top         : 50%;
+  left        : 50%;
+  width       : 930px;
+  min-height  : 600px;
+  padding     : 40px;
+  position    : absolute;
+  margin-left : -500px;
+  margin-top  : -400px;
+  border      : 1px solid black;
+  background-color: #5A6856;
+  -moz-box-shadow:    inset 0 0 10px #fff;
+  -webkit-box-shadow: inset 0 0 10px #fff;
+  box-shadow:         inset 0 0 10px #fff;
+}
+
+div#app {
+  display : block;
+  height  : 500px;
+}
+
+div#app-log {
+  margin-top          : 20px;
+  color               : white;
+  padding             : 15px;
+  background-color    : #212121;
+  -moz-box-shadow     : 6px 6px 5px 2px #000;
+  -webkit-box-shadow  : 6px 6px 5px 2px #000;
+  box-shadow          : 6px 6px 5px 2px #000;
+}
+
+.hidden {
+  display: none;
+}
+
+ul {
+  margin  : 0;
+  display : inline-block;
+  width   : 390px;
+}
+
+li {
+  margin-top      : 10px;
+  padding         : 10px 10px 0 10px;
+  height          : 30px;
+  border          : 1px solid black;
+  list-style-type : none;
+  background-color: #d9d9d9;
+  -moz-box-shadow     : 6px 6px 5px 2px #000;
+  -webkit-box-shadow  : 6px 6px 5px 2px #000;
+  box-shadow          : 6px 6px 5px 2px #000;
+}
+
+li.place {
+  margin-top : 40px;
+}
+
+li.action {
+  cursor          : pointer;
+  background-color: #51b12f;
+}
+
+li.info {
+  background-color  : white;
+  color             : #888;
+  height            : 55px;
+  margin-bottom     : 25px;
+}
+
+li.action:hover {
+  background-color: #f1b12f;
+  border-color: white;
+  -moz-box-shadow     : 6px 6px 5px 2px #222;
+  -webkit-box-shadow  : 6px 6px 5px 2px #222;
+  box-shadow          : 6px 6px 5px 2px #222;
+}
+
+li span {
+  display       : inline-block;
+}
+
+li span:first-child {
+  width: 210px;
+}
+
+li span.small {
+  font-size: 12px;
+}
+
+li span[id] {
+  color         : green;
+  float         : right;
+  width         : 150px;
+  text-align    : right;
+  overflow      : hidden;
+  text-overflow : ellipsis;
+  white-space   : nowrap;
+}
+
+li.action span[id] {
+  color : white;
+}
+
+li.info span:first-child {
+  width: 100%;
+}
+
+div#app-graphics_ {
+  display : inline-block;
+  height  : 500px;
+  float   : left;
+  -moz-box-shadow     : 6px 6px 5px 2px #000;
+  -webkit-box-shadow  : 6px 6px 5px 2px #000;
+  box-shadow          : 6px 6px 5px 2px #000;
+}

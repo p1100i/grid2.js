@@ -1,0 +1,42 @@
+{
+  "name"        : "grid2",
+  "description" : "JavaScript implementation of a static spatial grid index in two dimension.",
+  "author"      : "Burning Gramma <burninggramma@gmail.com>",
+  "version"     : "0.0.1",
+  "main"        : "src/grid2.js",
+  "license"     : "MIT",
+  "licenseUrl"  : "http://www.opensource.org/licenses/mit-license.php",
+  "homepage"    : "http://burninggramma.github.io/grid2.js",
+  "repository"  : {
+    "type" : "git",
+    "url"  : "https://github.com/burninggramma/grid2.js"
+  },
+  "engines"     : {
+    "node": ">= 0.10.0"
+  },
+  "scripts"     : {
+    "test"       : "mocha test/*.js",
+    "test-watch" : "grunt watch",
+    "build"      : "grunt"
+  },
+  "dependencies" : {
+  },
+  "devDependencies": {
+    "mocha"               : "latest",
+    "should"              : "latest",
+    "grunt"               : "latest",
+    "grunt-cli"           : "latest",
+    "grunt-browserify"    : "latest",
+    "grunt-contrib-jshint": "latest",
+    "grunt-contrib-watch" : "latest",
+    "grunt-contrib-uglify": "latest",
+    "grunt-simple-mocha"  : "latest"
+  },
+  "keywords": [
+    "grid",
+    "spatial",
+    "2d",
+    "collision",
+    "detection"
+  ]
+}
