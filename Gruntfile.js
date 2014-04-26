@@ -22,8 +22,7 @@ module.exports = function(grunt) {
         maxlen: 150,
         quotmark: 'single'
       },
-      dev: ['Gruntfile.js', 'test/*.js'],
-      app:  ['src/*.js', 'index/main.js', 'test/*.js']
+      app:  ['src/*.js', 'index/main.js']
     },
 
     browserify: {

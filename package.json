@@ -20,6 +20,8 @@
     "build"      : "grunt"
   },
   "dependencies" : {
+    "vec2"      : "latest",
+    "my-helper" : "latest"
   },
   "devDependencies": {
     "mocha"               : "latest",
