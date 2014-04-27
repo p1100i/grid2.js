@@ -1,10 +1,10 @@
 window.onload = function () {
-  app = {
+  var app = {
     w_          : 500,
     h_          : 500,
     cellSize_   : 10,
     objects_    : {},
-    gameOfLife_ : new GameOfLife(),
+    gameOfLife_ : new window.Grid2(),
     $graphics_  : document.getElementById('app-graphics_'),
 
     colors_ : {
@@ -21,9 +21,9 @@ window.onload = function () {
     app.graphics_.clear();
   };
 
-  app.renderer_  = PIXI.autoDetectRenderer(app.w_, app.h_);
-  app.stage_     = new PIXI.Stage();
-  app.graphics_  = new PIXI.Graphics();
+  app.renderer_  = window.PIXI.autoDetectRenderer(app.w_, app.h_);
+  app.stage_     = new window.PIXI.Stage();
+  app.graphics_  = new window.PIXI.Graphics();
 
   app.start = function start() {
     app.$graphics_.appendChild(app.renderer_.view);
