@@ -19,8 +19,31 @@ module.exports = function(grunt) {
 
     jshint: {
       options: {
-        maxlen: 150,
-        quotmark: 'single'
+        browser     : true,
+        curly       : true,
+        eqeqeq      : true,
+        eqnull      : true,
+        indent      : 2,
+        latedef     : true,
+        maxlen      : 150,
+        newcap      : true,
+        node        : true,
+        noempty     : true,
+        nonew       : true,
+        quotmark    : 'single',
+        undef       : true,
+        unused      : true,
+        trailing    : true,
+        globals     : {
+          Vec2        : true,
+          describe    : false,
+          context     : false,
+          it          : false,
+          before      : false,
+          beforeEach  : false,
+          after       : false,
+          afterEach   : false
+        }
       },
       app:  ['src/*.js', 'index/main.js']
     },
@@ -78,8 +101,8 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-simple-mocha');
 
   grunt.registerTask('test', [
-    'jshint',
-    'simplemocha'
+    'simplemocha',
+    'jshint'
   ]);
 
   grunt.registerTask('build', [
