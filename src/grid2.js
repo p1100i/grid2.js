@@ -1,14 +1,16 @@
 var
   Vec2     = require('vec2'),
-  MyHelper = require('my-helper'),
+  MyHelper = require('../../my-helper.js'),
   Grid2;
 
 Grid2 = function Grid2(size) {
   var
     // Container for private data.
     data = {
-      objects_  : {},
-      ids_      : 1
+      ids_              : 1,
+      objects_          : {},
+      quadrants_        : {},
+      objectQuadrants_  : {}
     },
 
     // Inserted object keys.
@@ -24,12 +26,26 @@ Grid2 = function Grid2(size) {
 
     // Private function definitions.
     privateFns = {
+      gridKey : function gridKey(object) {
+      },
+
+      addObjectToGrid : function addObjectToGrid(object) {
+      },
+
+      checkObjectKeys : function checkObjectKeys(object) {
+        MyHelper.validateNumber(object[keys.id], keys.id);
+        MyHelper.validateVec2(object[keys.pos],  keys.pos);
+        MyHelper.validateVec2(object[keys.size], keys.size);
+        MyHelper.hasNoKey(data.objects_, object[keys.id], keys.id);
+        //.byCallbackObject(object, constraints.k.necessary, keys);
+      },
+
       nextId : function nextId() {
         return data.ids_++;
       },
 
       setSize : function setSize(size) {
-        MyHelper.isVec2(size);
+        MyHelper.validateVec2(size);
         data.size_ = new Vec2(size.x, size.y);
       },
 
@@ -42,9 +58,35 @@ Grid2 = function Grid2(size) {
 
     // Public function definitions
     publicFns = {
+      addObjects : function addObjects(objects) {
+        for (var i = 0; i < objects.length; i++) {
+          publicFns.addObject(objects[i]);
+        }
+      },
+
       addObject : function addObject(object) {
         privateFns.setObjId(object);
+        privateFns.checkObjectKeys(object);
+
         data.objects_[object[keys.id]] = object;
+      },
+
+      getObjectsBetween : function getObjectsBetween(beg, end) {
+        MyHelper.validateVec2(beg);
+        MyHelper.validateVec2(end);
+
+        var object,
+            result = {};
+
+        for (var id in data.objects_) {
+          object = data.objects_[id];
+
+          if (MyHelper.isBoxIntersectingBox(beg, end, object[keys.pos], object[keys.pos].add(object[keys.size], true))) {
+            result[id] = object;
+          }
+        }
+
+        return result;
       },
 
       debug : function debug(val) {
