@@ -12,19 +12,36 @@ Grid2 = function Grid2(size, quadrantSize) {
       objects_          : {},
       quadrants_        : {},
       objectQuadrants_  : {},
+      cache_            : { between : { dirty : 0, queries : {} } },
+      dirty_            : 1,
       size_             : null,
       quadrantSize_     : null
     },
 
     // Inserted object keys.
     keys = {
-      position  : 'pos_',
+      position  : 'position_',
       halfSize  : 'halfSize_',
       id        : 'id_'
     },
 
     // Private function definitions.
     privateFns = {
+      cache : function cache(type, key, objects) {
+        data.cache_[type].dirty        = data.dirty_;
+        data.cache_[type].queries[key] = objects;
+      },
+
+      cached : function cached(type, key) {
+        if (data.cache_[type].dirty === data.dirty_ && data.cache_[type].queries[key]) {
+          return data.cache_[type].queries[key];
+        }
+      },
+
+      cacheKey : function cacheKey(posBeg, posEnd) {
+        return posBeg.x + '_' + posBeg.y + '_' + posEnd.x + '_' + posEnd.y;
+      },
+
       checkObjectKeys : function checkObjectKeys(object) {
         MyHelper.validateNumber(object[keys.id], keys.id);
 
@@ -32,6 +49,10 @@ Grid2 = function Grid2(size, quadrantSize) {
         MyHelper.validateVec2(object[keys.halfSize],  keys.halfSize);
 
         MyHelper.hasNoKey(data.objects_, object[keys.id], keys.id);
+      },
+
+      dirty : function dirty(dirt) {
+        if (dirt) { data.dirty_++; }
       },
 
       nextId : function nextId() {
@@ -50,8 +71,8 @@ Grid2 = function Grid2(size, quadrantSize) {
         var
           key,
           quadrants = {},
-          posBeg = privateFns.getQuadrantBegPosition(object[keys.position].subtract(object[keys.halfSize], true)),
-          posEnd = privateFns.getQuadrantEndPosition(object[keys.position].add(object[keys.halfSize], true));
+          posBeg    = privateFns.getQuadrantBegPosition(object[keys.position].subtract(object[keys.halfSize], true)),
+          posEnd    = privateFns.getQuadrantEndPosition(object[keys.position].add(object[keys.halfSize], true));
             
         for (var x = posBeg.x; x < posEnd.x; x += data.quadrantSize_.x) {
           for (var y = posBeg.y; y < posEnd.y; y += data.quadrantSize_.y) {
@@ -98,6 +119,7 @@ Grid2 = function Grid2(size, quadrantSize) {
         var 
           quadrant,
           quadrantId,
+          dirt         = false,
           quadrants    = privateFns.getObjectQuadrants(object),
           newQuadrants = privateFns.getOrCreateQuadrants(object);
         
@@ -106,7 +128,8 @@ Grid2 = function Grid2(size, quadrantSize) {
             continue;
           }
 
-          quadrant = quadrants[quadrantId];
+          dirt      = true;
+          quadrant  = quadrants[quadrantId];
           delete quadrant.objects_[object[keys.id]];
           delete quadrants[quadrantId];
         }
@@ -116,10 +139,13 @@ Grid2 = function Grid2(size, quadrantSize) {
             continue;
           }
 
-          quadrant = newQuadrants[quadrantId];
+          dirt      = true;
+          quadrant  = newQuadrants[quadrantId];
           quadrant.objects_[object[keys.id]] = object;
           quadrants[quadrantId]              = quadrant;
         }
+
+        privateFns.dirty(dirt);
       }
     },
 
@@ -148,20 +174,35 @@ Grid2 = function Grid2(size, quadrantSize) {
         }
       },
 
-      getObjectsBetween : function getObjectsBetween(beg, end) {
-        MyHelper.validateVec2(beg);
-        MyHelper.validateVec2(end);
+      getObjectsBetween : function getObjectsBetween(posBeg, posEnd) {
+        MyHelper.validateVec2(posBeg);
+        MyHelper.validateVec2(posEnd);
 
-        var object,
-            objects = {};
+        var
+          objects = {},
+          quadrant,
+          quadrantPosBeg = privateFns.getQuadrantBegPosition(posBeg),
+          quadrantPosEnd = privateFns.getQuadrantEndPosition(posEnd),
+          cacheKey       = privateFns.cacheKey(quadrantPosBeg, quadrantPosEnd),
+          cached         = privateFns.cached('between', cacheKey);
 
-        for (var id in data.objects_) {
-          object = data.objects_[id];
+        if (cached) {
+          return cached;
+        }
 
-          if (MyHelper.isBoxIntersectingBox(beg, end, object[keys.position], object[keys.position].add(object[keys.halfSize], true))) {
-            objects[id] = object;
+        for (var x = quadrantPosBeg.x; x < quadrantPosEnd.x; x += data.quadrantSize_.x) {
+          for (var y = quadrantPosBeg.y; y < quadrantPosEnd.y; y += data.quadrantSize_.y) {
+            quadrant = data.quadrants_[x + '_' + y];
+
+            if (!quadrant) { continue; }
+
+            for (var id in quadrant.objects_) {
+              objects[id] = quadrant.objects_[id];
+            }
           }
         }
+
+        privateFns.cache('between', cacheKey, objects);
 
         return objects;
       },

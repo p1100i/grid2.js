@@ -15,8 +15,8 @@ describe('Grid2', function(){
     };
 
     this.objects  = [
-      { pos_ : new Vec2(15, 15), halfSize_ : new Vec2(3, 2) },
-      { pos_ : new Vec2(20, 20), halfSize_ : new Vec2(3, 2) }
+      { position_ : new Vec2(15, 15), halfSize_ : new Vec2(3, 2) },
+      { position_ : new Vec2(20, 20), halfSize_ : new Vec2(3, 2) }
     ];
 
     this.object = this.objects[0];
@@ -41,7 +41,7 @@ describe('Grid2', function(){
   describe('#addObject', function() {
     context('with an object without id', function() {
       it('should generate id_ for it', function() {
-        var object = { pos_ : new Vec2(1, 2), halfSize_ : new Vec2(3, 4) };
+        var object = { position_ : new Vec2(1, 2), halfSize_ : new Vec2(3, 4) };
 
         this.grid.addObject(object);
         object.id_.should.eql(1);
@@ -50,7 +50,7 @@ describe('Grid2', function(){
 
     context('with an object with id', function() {
       it('should not reset its id_', function() {
-        var object = { id_ : 2, pos_ : new Vec2(1, 2), halfSize_ : new Vec2(3, 4) };
+        var object = { id_ : 2, position_ : new Vec2(1, 2), halfSize_ : new Vec2(3, 4) };
 
         this.grid.addObject(object);
         object.id_.should.eql(2);
@@ -59,7 +59,7 @@ describe('Grid2', function(){
 
     context('with an object', function() {
       beforeEach(function() {
-        this.object.pos_      = new Vec2(13, 15);
+        this.object.position_ = new Vec2(13, 15);
         this.object.halfSize_ = new Vec2(3, 2);
 
         this.grid.addObject(this.object);
@@ -82,7 +82,7 @@ describe('Grid2', function(){
 
     context('with a big object', function() {
       beforeEach(function() {
-        this.object.pos_      = new Vec2(41, 40);
+        this.object.position_ = new Vec2(41, 40);
         this.object.halfSize_ = new Vec2(10, 10);
 
         this.grid.addObject(this.object);
@@ -109,7 +109,7 @@ describe('Grid2', function(){
     });
 
     it('should update them quadrants', function() {
-      this.object.pos_ = new Vec2(62, 48);
+      this.object.position_ = new Vec2(62, 48);
       this.grid.updateObject(this.object);
 
       should(this.grid.data_.quadrants_['10_10'].objects_['1']).be.not.ok;

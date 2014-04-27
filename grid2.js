@@ -1,6 +1,6 @@
 /**
  * @license
- * grid2 - v0.1.0
+ * grid2 - v0.2.0
  * Copyright (c) 2014 burninggramma
  * https://github.com/burninggramma/grid2.js
  *
@@ -245,16 +245,35 @@
                 objects_: {},
                 quadrants_: {},
                 objectQuadrants_: {},
+                cache_: {
+                    between: {
+                        dirty: 0,
+                        queries: {}
+                    }
+                },
+                dirty_: 1,
                 size_: null,
                 quadrantSize_: null
             }, g = {
-                position: "pos_",
+                position: "position_",
                 halfSize: "halfSize_",
                 id: "id_"
             }, h = {
+                cache: function(a, b, d) {
+                    c.cache_[a].dirty = c.dirty_, c.cache_[a].queries[b] = d;
+                },
+                cached: function(a, b) {
+                    return c.cache_[a].dirty === c.dirty_ && c.cache_[a].queries[b] ? c.cache_[a].queries[b] : void 0;
+                },
+                cacheKey: function(a, b) {
+                    return a.x + "_" + a.y + "_" + b.x + "_" + b.y;
+                },
                 checkObjectKeys: function(a) {
                     e.validateNumber(a[g.id], g.id), e.validateVec2(a[g.position], g.position), e.validateVec2(a[g.halfSize], g.halfSize), 
                     e.hasNoKey(c.objects_, a[g.id], g.id);
+                },
+                dirty: function(a) {
+                    a && c.dirty_++;
                 },
                 nextId: function() {
                     return c.ids_++;
@@ -283,9 +302,10 @@
                     a[g.id] || (a[g.id] = h.nextId());
                 },
                 updateObjectQuadrants: function(a) {
-                    var b, c, d = h.getObjectQuadrants(a), e = h.getOrCreateQuadrants(a);
-                    for (c in d) e[c] || (b = d[c], delete b.objects_[a[g.id]], delete d[c]);
-                    for (c in e) d[c] || (b = e[c], b.objects_[a[g.id]] = a, d[c] = b);
+                    var b, c, d = !1, e = h.getObjectQuadrants(a), f = h.getOrCreateQuadrants(a);
+                    for (c in e) f[c] || (d = !0, b = e[c], delete b.objects_[a[g.id]], delete e[c]);
+                    for (c in f) e[c] || (d = !0, b = f[c], b.objects_[a[g.id]] = a, e[c] = b);
+                    h.dirty(d);
                 }
             }, i = {
                 addObject: function(a) {
@@ -302,9 +322,10 @@
                 },
                 getObjectsBetween: function(a, b) {
                     e.validateVec2(a), e.validateVec2(b);
-                    var d, f = {};
-                    for (var h in c.objects_) d = c.objects_[h], e.isBoxIntersectingBox(a, b, d[g.position], d[g.position].add(d[g.halfSize], !0)) && (f[h] = d);
-                    return f;
+                    var d, f = {}, g = h.getQuadrantBegPosition(a), i = h.getQuadrantEndPosition(b), j = h.cacheKey(g, i), k = h.cached("between", j);
+                    if (k) return k;
+                    for (var l = g.x; l < i.x; l += c.quadrantSize_.x) for (var m = g.y; m < i.y; m += c.quadrantSize_.y) if (d = c.quadrants_[l + "_" + m]) for (var n in d.objects_) f[n] = d.objects_[n];
+                    return h.cache("between", j, f), f;
                 },
                 debug: function(a, b) {
                     if (void 0 !== a) {
