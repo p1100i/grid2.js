@@ -3,7 +3,8 @@ var
   Grid2Quadrant = require('../src/grid2quadrant'),
   Grid2         = require('../src/grid2'),
   should        = require('should'),
-  rand          = function rand(num) { return Math.floor(Math.random() * num); };
+  rand          = function rand(num) { return Math.floor(Math.random() * num); },
+  key           = function key(x, y) { return new Vec2(x,y).toString(); };
 
 describe('Grid2', function(){
   beforeEach(function() {
@@ -11,15 +12,15 @@ describe('Grid2', function(){
 
     this.between = {
       beg : new Vec2(10, 10),
-      end : new Vec2(30, 30)
+      end : new Vec2(30, 30),
+      objects : [
+        { position_ : new Vec2(15, 15), halfSize_ : new Vec2(3, 2) },
+        { position_ : new Vec2(20, 20), halfSize_ : new Vec2(3, 2) },
+        { position_ : new Vec2(32, 32), halfSize_ : new Vec2(1, 1) }
+      ]
     };
 
-    this.objects  = [
-      { position_ : new Vec2(15, 15), halfSize_ : new Vec2(3, 2) },
-      { position_ : new Vec2(20, 20), halfSize_ : new Vec2(3, 2) }
-    ];
-
-    this.object = this.objects[0];
+    this.object = this.between.objects[0];
   });
 
   describe('#ctor', function() {
@@ -71,12 +72,12 @@ describe('Grid2', function(){
       });
 
       it('should register quadrants in data', function() {
-        this.grid.data_.quadrants_['10_10'].posBeg_.x.should.eql(10);
-        this.grid.data_.quadrants_['10_10'].posEnd_.y.should.eql(20);
+        this.grid.data_.quadrants_[key(10, 10)].begPosition_.x.should.eql(10);
+        this.grid.data_.quadrants_[key(10, 10)].endPosition_.y.should.eql(20);
       });
 
       it('should register the object for the quadrant in data', function() {
-        this.grid.data_.quadrants_['10_10'].objects_['1'].should.eql(this.object);
+        this.grid.data_.quadrants_[key(10, 10)].objects_['1'].should.eql(this.object);
       });
     });
 
@@ -90,14 +91,14 @@ describe('Grid2', function(){
       });
 
       it('should register the object for the quadrants in data', function() {
-        should(this.grid.data_.quadrants_['40_20']).be.not.ok;
-        should(this.grid.data_.quadrants_['30_20']).be.not.ok;
-        this.grid.data_.quadrants_['30_30'].objects_['1'].should.eql(this.object);
-        this.grid.data_.quadrants_['40_30'].objects_['1'].should.eql(this.object);
-        this.grid.data_.quadrants_['30_40'].objects_['1'].should.eql(this.object);
-        this.grid.data_.quadrants_['40_40'].objects_['1'].should.eql(this.object);
-        this.grid.data_.quadrants_['50_40'].objects_['1'].should.eql(this.object);
-        this.grid.data_.quadrants_['40_50'].objects_['1'].should.eql(this.object);
+        should(this.grid.data_.quadrants_[key(40, 20)]).be.not.ok;
+        should(this.grid.data_.quadrants_[key(30, 20)]).be.not.ok;
+        this.grid.data_.quadrants_[key(30, 30)].objects_['1'].should.eql(this.object);
+        this.grid.data_.quadrants_[key(40, 30)].objects_['1'].should.eql(this.object);
+        this.grid.data_.quadrants_[key(30, 40)].objects_['1'].should.eql(this.object);
+        this.grid.data_.quadrants_[key(40, 40)].objects_['1'].should.eql(this.object);
+        this.grid.data_.quadrants_[key(50, 40)].objects_['1'].should.eql(this.object);
+        this.grid.data_.quadrants_[key(40, 50)].objects_['1'].should.eql(this.object);
       });
     });
   });
@@ -112,8 +113,8 @@ describe('Grid2', function(){
       this.object.position_ = new Vec2(62, 48);
       this.grid.updateObject(this.object);
 
-      should(this.grid.data_.quadrants_['10_10'].objects_['1']).be.not.ok;
-      this.grid.data_.quadrants_['60_40'].objects_['1'].should.eql(this.object);
+      should(this.grid.data_.quadrants_[key(10, 10)].objects_['1']).be.not.ok;
+      this.grid.data_.quadrants_[key(60, 40)].objects_['1'].should.eql(this.object);
     });
   });
 
@@ -132,23 +133,52 @@ describe('Grid2', function(){
       });
     });
 
-    context('without objects inside the bounds', function() {
-      it('should return {}', function() {
-        this.grid.addObjects(this.objects);
-        var result = this.grid.getObjectsBetween(new Vec2(80, 80), new Vec2(90, 90)).should.eql({});
+    context('with objects', function() {
+      beforeEach(function() {
+        this.grid.addObjects(this.between.objects);
+      });
 
-        result.should.not.be.an.Array;
-        result.should.be.an.Object;
+      context('outside the bounds', function() {
+        it('should return {}', function() {
+          var result = this.grid.getObjectsBetween(new Vec2(80, 80), new Vec2(90, 90)).should.eql({});
+
+          result.should.not.be.an.Array;
+          result.should.be.an.Object;
+        });
+      });
+
+      context('inside the bounds', function() {
+        it('should return the objects', function() {
+          this.grid.getObjectsBetween(this.between.beg, this.between.end).should.eql({
+            1 : this.between.objects[0],
+            2 : this.between.objects[1]
+          });
+        });
+      });
+    });
+  });
+
+  describe('#hasObjectsOn', function() {
+    context('without proper coordinates', function() {
+      it('should throw', function() {
+        this.grid.hasObjectsOn.should.throw(/^NaV/);
       });
     });
 
-    context('with objects inside the bounds', function() {
-      it('should return the objects', function() {
-        this.grid.addObjects(this.objects);
+    context('with objects', function() {
+      beforeEach(function() {
+        this.grid.addObjects(this.between.objects);
+      });
 
-        this.grid.getObjectsBetween(this.between.beg, this.between.end).should.eql({
-          1 : this.objects[0],
-          2 : this.objects[1]
+      context('not on coordinate', function() {
+        it('should return true', function() {
+          this.grid.hasObjectsOn(new Vec2(40, 40)).should.eql(false);
+        });
+      });
+
+      context('on coordinate', function() {
+        it('should return true', function() {
+          this.grid.hasObjectsOn(new Vec2(30, 30)).should.eql(true);
         });
       });
     });
