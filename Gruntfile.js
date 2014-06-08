@@ -33,17 +33,7 @@ module.exports = function(grunt) {
         quotmark    : 'single',
         undef       : true,
         unused      : true,
-        trailing    : true,
-        globals     : {
-          Vec2        : true,
-          describe    : false,
-          context     : false,
-          it          : false,
-          before      : false,
-          beforeEach  : false,
-          after       : false,
-          afterEach   : false
-        }
+        trailing    : true
       },
       app:  ['src/*.js', 'index/main.js']
     },
