@@ -1,10 +1,10 @@
 /**
  * @license
- * grid2 - v0.2.0
+ * grid2 - v0.3.0
  * Copyright (c) 2014 burninggramma
  * https://github.com/burninggramma/grid2.js
  *
- * Compiled: 2014-04-27
+ * Compiled: 2014-06-08
  *
  * grid2 is licensed under the MIT License.
  * http://www.opensource.org/licenses/mit-license.php
@@ -238,13 +238,13 @@
         }();
     }, {} ],
     4: [ function(a, b) {
-        var c, d = a("vec2"), e = a("my-helper"), f = a("./grid2quadrant");
+        var c, d = a("vec2"), e = a("my-helper");
         c = function(a, b) {
             var c = {
                 ids_: 1,
                 objects_: {},
-                quadrants_: {},
-                objectQuadrants_: {},
+                cells_: {},
+                objectCells_: {},
                 cache_: {
                     between: {
                         dirty: 0,
@@ -253,12 +253,15 @@
                 },
                 dirty_: 1,
                 size_: null,
-                quadrantSize_: null
-            }, g = {
+                cellSize_: null
+            }, f = new d(1, 1), g = {
                 position: "position_",
                 halfSize: "halfSize_",
                 id: "id_"
-            }, h = {
+            }, h = function(a, b) {
+                this.id_ = a, this.begPosition_ = b.clone(), this.endPosition_ = this.begPosition_.add(c.cellSize_, !0), 
+                this.objects_ = {}, this.meta_ = {};
+            }, i = {
                 cache: function(a, b, d) {
                     c.cache_[a].dirty = c.dirty_, c.cache_[a].queries[b] = d;
                 },
@@ -266,11 +269,11 @@
                     return c.cache_[a].dirty === c.dirty_ && c.cache_[a].queries[b] ? c.cache_[a].queries[b] : void 0;
                 },
                 cacheKey: function(a, b) {
-                    return a.x + "_" + a.y + "_" + b.x + "_" + b.y;
+                    return a.toString() + "_" + b.toString();
                 },
-                checkObjectKeys: function(a) {
+                checkObjectKeys: function(a, b) {
                     e.validateNumber(a[g.id], g.id), e.validateVec2(a[g.position], g.position), e.validateVec2(a[g.halfSize], g.halfSize), 
-                    e.hasNoKey(c.objects_, a[g.id], g.id);
+                    b ? e.hasKey(c.objects_, a[g.id], g.id) : e.hasNoKey(c.objects_, a[g.id], g.id);
                 },
                 dirty: function(a) {
                     a && c.dirty_++;
@@ -278,76 +281,96 @@
                 nextId: function() {
                     return c.ids_++;
                 },
-                getObjectQuadrants: function(a) {
-                    return c.objectQuadrants_[a[g.id]] || (c.objectQuadrants_[a[g.id]] = {}), c.objectQuadrants_[a[g.id]];
+                getObjectCells: function(a) {
+                    return c.objectCells_[a[g.id]] || (c.objectCells_[a[g.id]] = {}), c.objectCells_[a[g.id]];
                 },
-                getOrCreateQuadrants: function(a) {
-                    for (var b, e = {}, i = h.getQuadrantBegPosition(a[g.position].subtract(a[g.halfSize], !0)), j = h.getQuadrantEndPosition(a[g.position].add(a[g.halfSize], !0)), k = i.x; k < j.x; k += c.quadrantSize_.x) for (var l = i.y; l < j.y; l += c.quadrantSize_.y) b = k + "_" + l, 
-                    e[b] = c.quadrants_[b] ? c.quadrants_[b] : c.quadrants_[b] = new f(b, new d(k, l), c.quadrantSize_);
+                getOrCreateCell: function(a) {
+                    var b;
+                    return a = i.getCellBegPosition(a), b = a.toString(), c.cells_[b] || (c.cells_[b] = new h(b, a)), c.cells_[b];
+                },
+                getOrCreateCells: function(a) {
+                    var b, d, e = {}, j = a[g.position].subtract(a[g.halfSize], !0), k = a[g.position].add(a[g.halfSize], !0).subtract(f), l = i.getCellBegPosition(j), m = i.getCellBegPosition(k);
+                    for (d = l.clone(); d.x <= m.x; d.x += c.cellSize_.x) for (d.y = l.y; d.y <= m.y; d.y += c.cellSize_.y) b = d.toString(), 
+                    e[b] = c.cells_[b] ? c.cells_[b] : c.cells_[b] = new h(b, d);
                     return e;
                 },
-                getQuadrantBegPosition: function(a) {
-                    return new d(Math.floor(a.x / c.quadrantSize_.x) * c.quadrantSize_.x, Math.floor(a.y / c.quadrantSize_.y) * c.quadrantSize_.y);
-                },
-                getQuadrantEndPosition: function(a) {
-                    return h.getQuadrantBegPosition(a).add(c.quadrantSize_);
+                getCellBegPosition: function(a) {
+                    return new d(Math.floor(a.x / c.cellSize_.x) * c.cellSize_.x, Math.floor(a.y / c.cellSize_.y) * c.cellSize_.y);
                 },
                 setSize: function(a) {
                     e.validateVec2(a), c.size_ = new d(a.x, a.y);
                 },
-                setQuadrantSize: function(a) {
-                    e.validateVec2(a), c.quadrantSize_ = new d(a.x, a.y);
+                setCellSize: function(a) {
+                    e.validateVec2(a), c.cellSize_ = new d(a.x, a.y);
                 },
                 setObjId: function(a) {
-                    a[g.id] || (a[g.id] = h.nextId());
+                    a[g.id] || (a[g.id] = i.nextId());
                 },
-                updateObjectQuadrants: function(a) {
-                    var b, c, d = !1, e = h.getObjectQuadrants(a), f = h.getOrCreateQuadrants(a);
+                updateObjectCells: function(a) {
+                    var b, c, d = !1, e = i.getObjectCells(a), f = i.getOrCreateCells(a);
                     for (c in e) f[c] || (d = !0, b = e[c], delete b.objects_[a[g.id]], delete e[c]);
                     for (c in f) e[c] || (d = !0, b = f[c], b.objects_[a[g.id]] = a, e[c] = b);
-                    h.dirty(d);
+                    i.dirty(d);
                 }
-            }, i = {
+            }, j = {
                 addObject: function(a) {
-                    h.setObjId(a), h.checkObjectKeys(a), h.updateObjectQuadrants(a), c.objects_[a[g.id]] = a;
+                    i.setObjId(a), i.checkObjectKeys(a), i.updateObjectCells(a), c.objects_[a[g.id]] = a;
                 },
                 addObjects: function(a) {
-                    for (var b = 0; b < a.length; b++) i.addObject(a[b]);
-                },
-                updateObject: function(a) {
-                    h.updateObjectQuadrants(a);
-                },
-                updateObjects: function(a) {
-                    for (var b = 0; b < a.length; b++) i.updateObject(a[b]);
-                },
-                getObjectsBetween: function(a, b) {
-                    e.validateVec2(a), e.validateVec2(b);
-                    var d, f = {}, g = h.getQuadrantBegPosition(a), i = h.getQuadrantEndPosition(b), j = h.cacheKey(g, i), k = h.cached("between", j);
-                    if (k) return k;
-                    for (var l = g.x; l < i.x; l += c.quadrantSize_.x) for (var m = g.y; m < i.y; m += c.quadrantSize_.y) if (d = c.quadrants_[l + "_" + m]) for (var n in d.objects_) f[n] = d.objects_[n];
-                    return h.cache("between", j, f), f;
+                    for (var b = 0; b < a.length; b++) j.addObject(a[b]);
                 },
                 debug: function(a, b) {
                     if (void 0 !== a) {
                         c.exposed_ = !!a, c.debugging_ = !!b;
-                        for (var d in h) this[d] = c.exposed_ ? h[d] : void 0;
+                        for (var d in i) this[d] = c.exposed_ ? i[d] : void 0;
                         this.data_ = c.exposed_ ? c : void 0;
                     }
                     return c.debugging_;
+                },
+                getMetaOn: function(a, b) {
+                    e.validateVec2(a);
+                    var d;
+                    return a = i.getCellBegPosition(a), d = c.cells_[a.toString()], d && d.meta_[b];
+                },
+                getObjectsBetween: function(a, b) {
+                    e.validateVec2(a), e.validateVec2(b);
+                    var d, f, g = {}, h = i.getCellBegPosition(a), j = i.getCellBegPosition(b), k = i.cacheKey(h, j), l = i.cached("between", k);
+                    if (l) return l;
+                    for (f = h.clone(); f.x <= h.x; f.x += c.cellSize_.x) for (f.y = h.y; f.y <= j.y; f.y += c.cellSize_.y) if (d = c.cells_[f.toString()]) for (var m in d.objects_) g[m] = d.objects_[m];
+                    return i.cache("between", k, g), g;
+                },
+                getObjectsOn: function(a) {
+                    e.validateVec2(a);
+                    var b;
+                    return a = i.getCellBegPosition(a), b = c.cells_[a.toString()], b && b.objects_;
+                },
+                getCellSize: function() {
+                    return c.cellSize_.clone();
+                },
+                getSize: function() {
+                    return c.size_.clone();
+                },
+                hasObjectsOn: function(a) {
+                    var b = j.getObjectsOn(a);
+                    return !(!b || !Object.keys(b).length);
+                },
+                updateObject: function(a) {
+                    i.checkObjectKeys(a, !0), i.updateObjectCells(a);
+                },
+                updateObjects: function(a) {
+                    for (var b = 0; b < a.length; b++) j.updateObject(a[b]);
+                },
+                setMetaOn: function(a, b, c) {
+                    e.validateVec2(a);
+                    var d = i.getOrCreateCell(a);
+                    d.meta_[b] = c;
                 }
             };
-            for (var j in i) this[j] = i[j];
-            h.setSize(a), h.setQuadrantSize(b);
+            for (var k in j) this[k] = j[k];
+            i.setSize(a), i.setCellSize(b);
         }, b.exports = c;
     }, {
-        "./grid2quadrant": 5,
         "my-helper": 2,
         vec2: 3
-    } ],
-    5: [ function(a, b) {
-        var c = function(a, b, c) {
-            this.id_ = a, this.posBeg_ = b, this.posEnd_ = b.add(c, !0), this.objects_ = {};
-        };
-        b.exports = c;
-    }, {} ]
+    } ]
 }, {}, [ 1 ]);
