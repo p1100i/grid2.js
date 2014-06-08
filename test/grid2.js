@@ -1,6 +1,5 @@
 var
   Vec2          = require('vec2'),
-  Grid2Quadrant = require('../src/grid2quadrant'),
   Grid2         = require('../src/grid2'),
   should        = require('should'),
   rand          = function rand(num) { return Math.floor(Math.random() * num); },
@@ -71,13 +70,31 @@ describe('Grid2', function(){
         this.grid.data_.objects_[this.object.id_].should.be.ok;
       });
 
-      it('should register quadrants in data', function() {
-        this.grid.data_.quadrants_[key(10, 10)].begPosition_.x.should.eql(10);
-        this.grid.data_.quadrants_[key(10, 10)].endPosition_.y.should.eql(20);
+      it('should register cells in data', function() {
+        this.grid.data_.cells_[key(10, 10)].begPosition_.x.should.eql(10);
+        this.grid.data_.cells_[key(10, 10)].endPosition_.y.should.eql(20);
       });
 
-      it('should register the object for the quadrant in data', function() {
-        this.grid.data_.quadrants_[key(10, 10)].objects_['1'].should.eql(this.object);
+      it('should register the object for the cell in data', function() {
+        this.grid.data_.cells_[key(10, 10)].objects_['1'].should.eql(this.object);
+      });
+
+    });
+
+    context('with an object positioned on borders', function() {
+      beforeEach(function() {
+        this.object.position_ = new Vec2(16, 14);
+        this.object.halfSize_ = new Vec2(4, 4);
+        this.grid.addObject(this.object);
+        this.grid.debug(true);
+      });
+
+      it('should register the object for the proper cells', function() {
+        console.log(this.grid.data_.cells_);
+        Object.keys(this.grid.data_.cells_).length.should.eql(1);
+        this.grid.data_.cells_[key(10, 10)].objects_['1'].should.eql(this.object);
+        should(this.grid.data_.cells_[key(20, 10)]).be.not.ok;
+        should(this.grid.data_.cells_[key(10, 20)]).be.not.ok;
       });
     });
 
@@ -90,15 +107,15 @@ describe('Grid2', function(){
         this.grid.debug(true);
       });
 
-      it('should register the object for the quadrants in data', function() {
-        should(this.grid.data_.quadrants_[key(40, 20)]).be.not.ok;
-        should(this.grid.data_.quadrants_[key(30, 20)]).be.not.ok;
-        this.grid.data_.quadrants_[key(30, 30)].objects_['1'].should.eql(this.object);
-        this.grid.data_.quadrants_[key(40, 30)].objects_['1'].should.eql(this.object);
-        this.grid.data_.quadrants_[key(30, 40)].objects_['1'].should.eql(this.object);
-        this.grid.data_.quadrants_[key(40, 40)].objects_['1'].should.eql(this.object);
-        this.grid.data_.quadrants_[key(50, 40)].objects_['1'].should.eql(this.object);
-        this.grid.data_.quadrants_[key(40, 50)].objects_['1'].should.eql(this.object);
+      it('should register the object for the cells in data', function() {
+        should(this.grid.data_.cells_[key(40, 20)]).be.not.ok;
+        should(this.grid.data_.cells_[key(30, 20)]).be.not.ok;
+        should(this.grid.data_.cells_[key(40, 50)]).be.not.ok;
+        this.grid.data_.cells_[key(30, 30)].objects_['1'].should.eql(this.object);
+        this.grid.data_.cells_[key(40, 30)].objects_['1'].should.eql(this.object);
+        this.grid.data_.cells_[key(30, 40)].objects_['1'].should.eql(this.object);
+        this.grid.data_.cells_[key(40, 40)].objects_['1'].should.eql(this.object);
+        this.grid.data_.cells_[key(50, 40)].objects_['1'].should.eql(this.object);
       });
     });
   });
@@ -109,12 +126,12 @@ describe('Grid2', function(){
       this.grid.debug(true);
     });
 
-    it('should update them quadrants', function() {
+    it('should update them cells', function() {
       this.object.position_ = new Vec2(62, 48);
       this.grid.updateObject(this.object);
 
-      should(this.grid.data_.quadrants_[key(10, 10)].objects_['1']).be.not.ok;
-      this.grid.data_.quadrants_[key(60, 40)].objects_['1'].should.eql(this.object);
+      should(this.grid.data_.cells_[key(10, 10)].objects_['1']).be.not.ok;
+      this.grid.data_.cells_[key(60, 40)].objects_['1'].should.eql(this.object);
     });
   });
 
@@ -182,5 +199,17 @@ describe('Grid2', function(){
         });
       });
     });
+  });
+
+  describe('#getOrCreateCell', function() {
+    it('should be tested')
+  });
+
+  describe('#getMetaOn', function() {
+    it('should be tested')
+  });
+
+  describe('#setMetaOn', function() {
+    it('should be tested')
   });
 });

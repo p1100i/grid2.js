@@ -3,19 +3,21 @@ var
   MyHelper      = require('my-helper'),
   Grid2;
 
-Grid2 = function Grid2(size, quadrantSize) {
+Grid2 = function Grid2(size, cellSize) {
   var
     // Container for private data.
     data = {
-      ids_              : 1,
-      objects_          : {},
-      quadrants_        : {},
-      objectQuadrants_  : {},
-      cache_            : { between : { dirty : 0, queries : {} } },
-      dirty_            : 1,
-      size_             : null,
-      quadrantSize_     : null
+      ids_          : 1,
+      objects_      : {},
+      cells_        : {},
+      objectCells_  : {},
+      cache_        : { between : { dirty : 0, queries : {} } },
+      dirty_        : 1,
+      size_         : null,
+      cellSize_     : null
     },
+
+    unit = new Vec2(1, 1),
 
     // Inserted object keys.
     keys = {
@@ -24,11 +26,12 @@ Grid2 = function Grid2(size, quadrantSize) {
       id        : 'id_'
     },
 
-    Grid2Quadrant = function Grid2Quadrant(id, position) {
+    Grid2Cell = function Grid2Cell(id, position) {
       this.id_          = id;
       this.begPosition_ = position.clone();
-      this.endPosition_ = this.begPosition_.add(data.quadrantSize_, true);
-      this.objects_ = {};
+      this.endPosition_ = this.begPosition_.add(data.cellSize_, true);
+      this.objects_     = {};
+      this.meta_        = {};
     },
 
     // Private function definitions.
@@ -48,13 +51,17 @@ Grid2 = function Grid2(size, quadrantSize) {
         return begPosition.toString() + '_' + endPosition.toString();
       },
 
-      checkObjectKeys : function checkObjectKeys(object) {
+      checkObjectKeys : function checkObjectKeys(object, shouldBeAdded) {
         MyHelper.validateNumber(object[keys.id], keys.id);
 
         MyHelper.validateVec2(object[keys.position],  keys.position);
         MyHelper.validateVec2(object[keys.halfSize],  keys.halfSize);
 
-        MyHelper.hasNoKey(data.objects_, object[keys.id], keys.id);
+        if (shouldBeAdded) {
+          MyHelper.hasKey(data.objects_, object[keys.id], keys.id);
+        } else {
+          MyHelper.hasNoKey(data.objects_, object[keys.id], keys.id);
+        }
       },
 
       dirty : function dirty(dirt) {
@@ -65,40 +72,60 @@ Grid2 = function Grid2(size, quadrantSize) {
         return data.ids_++;
       },
 
-      getObjectQuadrants : function getObjectQuadrants(object) {
-        if (!data.objectQuadrants_[object[keys.id]]) {
-          data.objectQuadrants_[object[keys.id]] = {};
+      getObjectCells : function getObjectCells(object) {
+        if (!data.objectCells_[object[keys.id]]) {
+          data.objectCells_[object[keys.id]] = {};
         }
 
-        return data.objectQuadrants_[object[keys.id]];
+        return data.objectCells_[object[keys.id]];
       },
 
-      getOrCreateQuadrants : function getOrCreateQuadrants(object) {
+      getOrCreateCell : function getOrCreateCell(position) {
+        var key;
+
+        position  = privateFns.getCellBegPosition(position);
+        key       = position.toString();
+
+        if (!data.cells_[key]) {
+          data.cells_[key] = new Grid2Cell(key, position);
+        }
+
+        return data.cells_[key];
+      },
+
+      getOrCreateCells : function getOrCreateCells(object) {
         var
           key,
           position,
-          quadrants   = {},
-          begPosition = privateFns.getQuadrantBegPosition(object[keys.position].subtract(object[keys.halfSize], true)),
-          endPosition = privateFns.getQuadrantBegPosition(object[keys.position].add(object[keys.halfSize], true));
+          cells             = {},
+          objectBegPosition = object[keys.position].subtract(object[keys.halfSize], true),
+          objectEndPosition = object[keys.position].add(object[keys.halfSize], true).subtract(unit),
+          cellBegPosition   = privateFns.getCellBegPosition(objectBegPosition),
+          cellEndPosition   = privateFns.getCellBegPosition(objectEndPosition);
 
-        for (position = begPosition.clone(); position.x <= endPosition.x; position.x += data.quadrantSize_.x) {
-          for (position.y = begPosition.y; position.y <= endPosition.y; position.y += data.quadrantSize_.y) {
+        // As the lower/right side of a cell is considered as the beginning of the neighbour cell
+        // we need to subtract one unit from the end position of the object, otherwise it will be registered
+        // twice, see how objectEndPosition is calculated.
+        // +) Not sure if this is the right way, but in my game use case, it is.
+
+        for (position = cellBegPosition.clone(); position.x <= cellEndPosition.x; position.x += data.cellSize_.x) {
+          for (position.y = cellBegPosition.y; position.y <= cellEndPosition.y; position.y += data.cellSize_.y) {
             key = position.toString();
-            if (!data.quadrants_[key]) {
-              quadrants[key] = data.quadrants_[key] = new Grid2Quadrant(key, position);
+            if (!data.cells_[key]) {
+              cells[key] = data.cells_[key] = new Grid2Cell(key, position);
             } else {
-              quadrants[key] = data.quadrants_[key];
+              cells[key] = data.cells_[key];
             }
           }
         }
 
-        return quadrants;
+        return cells;
       },
 
-      getQuadrantBegPosition : function getQuadrantBegPosition(position) {
+      getCellBegPosition : function getCellBegPosition(position) {
         return new Vec2(
-          Math.floor(position.x / data.quadrantSize_.x) * data.quadrantSize_.x,
-          Math.floor(position.y / data.quadrantSize_.y) * data.quadrantSize_.y
+          Math.floor(position.x / data.cellSize_.x) * data.cellSize_.x,
+          Math.floor(position.y / data.cellSize_.y) * data.cellSize_.y
         );
       },
 
@@ -107,9 +134,9 @@ Grid2 = function Grid2(size, quadrantSize) {
         data.size_ = new Vec2(size.x, size.y);
       },
 
-      setQuadrantSize : function setQuadrantSize(quadrantSize) {
-        MyHelper.validateVec2(quadrantSize);
-        data.quadrantSize_ = new Vec2(quadrantSize.x, quadrantSize.y);
+      setCellSize : function setCellSize(cellSize) {
+        MyHelper.validateVec2(cellSize);
+        data.cellSize_ = new Vec2(cellSize.x, cellSize.y);
       },
 
       setObjId : function setObjId(object) {
@@ -118,38 +145,38 @@ Grid2 = function Grid2(size, quadrantSize) {
         }
       },
 
-      updateObjectQuadrants : function updateObjectQuadrants(object) {
+      updateObjectCells : function updateObjectCells(object) {
         var
-          quadrant,
-          quadrantId,
-          dirt         = false,
-          quadrants    = privateFns.getObjectQuadrants(object),
-          newQuadrants = privateFns.getOrCreateQuadrants(object);
+          cell,
+          cellId,
+          dirt     = false,
+          cells    = privateFns.getObjectCells(object),
+          newCells = privateFns.getOrCreateCells(object);
         
-        for (quadrantId in quadrants) {
-          if (newQuadrants[quadrantId]) {
+        for (cellId in cells) {
+          if (newCells[cellId]) {
             continue;
           }
 
-          dirt      = true;
-          quadrant  = quadrants[quadrantId];
+          dirt  = true;
+          cell  = cells[cellId];
 
-          // Remove the object from the quadrant.
-          delete quadrant.objects_[object[keys.id]];
+          // Remove the object from the cell.
+          delete cell.objects_[object[keys.id]];
 
-          // Remove the quadrant from the objects-quadrant index.
-          delete quadrants[quadrantId];
+          // Remove the cell from the objects-cell index.
+          delete cells[cellId];
         }
 
-        for (quadrantId in newQuadrants) {
-          if (quadrants[quadrantId]) {
+        for (cellId in newCells) {
+          if (cells[cellId]) {
             continue;
           }
 
-          dirt      = true;
-          quadrant  = newQuadrants[quadrantId];
-          quadrant.objects_[object[keys.id]] = object;
-          quadrants[quadrantId]              = quadrant;
+          dirt                            = true;
+          cell                            = newCells[cellId];
+          cell.objects_[object[keys.id]]  = object;
+          cells[cellId]                   = cell;
         }
 
         privateFns.dirty(dirt);
@@ -161,7 +188,7 @@ Grid2 = function Grid2(size, quadrantSize) {
       addObject : function addObject(object) {
         privateFns.setObjId(object);
         privateFns.checkObjectKeys(object);
-        privateFns.updateObjectQuadrants(object);
+        privateFns.updateObjectCells(object);
         data.objects_[object[keys.id]] = object;
       },
 
@@ -169,61 +196,6 @@ Grid2 = function Grid2(size, quadrantSize) {
         for (var i = 0; i < objects.length; i++) {
           publicFns.addObject(objects[i]);
         }
-      },
-
-      updateObject : function updateObject(object) {
-        privateFns.updateObjectQuadrants(object);
-      },
-
-      updateObjects : function updateObjects(objects) {
-        for (var i = 0; i < objects.length; i++) {
-          publicFns.updateObject(objects[i]);
-        }
-      },
-
-      hasObjectsOn : function hasObjectsOn(position) {
-          MyHelper.validateVec2(position);
-
-          var quadrant;
-
-          position = privateFns.getQuadrantBegPosition(position);
-          quadrant = data.quadrants_[position.toString()];
-
-          return !!(quadrant && Object.keys(quadrant.objects_).length);
-      },
-
-      getObjectsBetween : function getObjectsBetween(begPosition, endPosition) {
-        MyHelper.validateVec2(begPosition);
-        MyHelper.validateVec2(endPosition);
-
-        var
-          quadrant,
-          position,
-          objects             = {},
-          betweenBegPosition  = privateFns.getQuadrantBegPosition(begPosition),
-          betweenEndPosition  = privateFns.getQuadrantBegPosition(endPosition),
-          cacheKey            = privateFns.cacheKey(betweenBegPosition, betweenEndPosition),
-          cached              = privateFns.cached('between', cacheKey);
-
-        if (cached) {
-          return cached;
-        }
-
-        for (position = betweenBegPosition.clone(); position.x <= betweenBegPosition.x; position.x += data.quadrantSize_.x) {
-          for (position.y = betweenBegPosition.y; position.y <= betweenEndPosition.y; position.y += data.quadrantSize_.y) {
-            quadrant = data.quadrants_[position.toString()];
-
-            if (!quadrant) { continue; }
-
-            for (var id in quadrant.objects_) {
-              objects[id] = quadrant.objects_[id];
-            }
-          }
-        }
-
-        privateFns.cache('between', cacheKey, objects);
-
-        return objects;
       },
 
       debug : function debug(exposed, debugging) {
@@ -239,6 +211,95 @@ Grid2 = function Grid2(size, quadrantSize) {
         }
 
         return data.debugging_;
+      },
+
+      getMetaOn : function getMetaOn(position, key) {
+          MyHelper.validateVec2(position);
+
+          var cell;
+
+          position = privateFns.getCellBegPosition(position);
+          cell = data.cells_[position.toString()];
+
+          return cell && cell.meta_[key];
+      },
+
+      getObjectsBetween : function getObjectsBetween(begPosition, endPosition) {
+        MyHelper.validateVec2(begPosition);
+        MyHelper.validateVec2(endPosition);
+
+        var
+          cell,
+          position,
+          objects             = {},
+          betweenBegPosition  = privateFns.getCellBegPosition(begPosition),
+          betweenEndPosition  = privateFns.getCellBegPosition(endPosition),
+          cacheKey            = privateFns.cacheKey(betweenBegPosition, betweenEndPosition),
+          cached              = privateFns.cached('between', cacheKey);
+
+        if (cached) {
+          return cached;
+        }
+
+        for (position = betweenBegPosition.clone(); position.x <= betweenBegPosition.x; position.x += data.cellSize_.x) {
+          for (position.y = betweenBegPosition.y; position.y <= betweenEndPosition.y; position.y += data.cellSize_.y) {
+            cell = data.cells_[position.toString()];
+
+            if (!cell) { continue; }
+
+            for (var id in cell.objects_) {
+              objects[id] = cell.objects_[id];
+            }
+          }
+        }
+
+        privateFns.cache('between', cacheKey, objects);
+
+        return objects;
+      },
+
+      getObjectsOn : function getObjectsOn(position) {
+          MyHelper.validateVec2(position);
+
+          var cell;
+
+          position = privateFns.getCellBegPosition(position);
+          cell = data.cells_[position.toString()];
+
+          return cell && cell.objects_;
+      },
+
+      getCellSize: function getCellSize() {
+        return data.cellSize_.clone();
+      },
+
+      getSize: function getSize() {
+        return data.size_.clone();
+      },
+
+      hasObjectsOn : function hasObjectsOn(position) {
+        var objects = publicFns.getObjectsOn(position);
+
+        return !!(objects && Object.keys(objects).length);
+      },
+
+      updateObject : function updateObject(object) {
+        privateFns.checkObjectKeys(object, true);
+        privateFns.updateObjectCells(object);
+      },
+
+      updateObjects : function updateObjects(objects) {
+        for (var i = 0; i < objects.length; i++) {
+          publicFns.updateObject(objects[i]);
+        }
+      },
+
+      setMetaOn : function setMetaOn(position, key, val) {
+        MyHelper.validateVec2(position);
+
+        var cell = privateFns.getOrCreateCell(position);
+
+        cell.meta_[key] = val;
       }
     };
 
@@ -246,7 +307,7 @@ Grid2 = function Grid2(size, quadrantSize) {
   for (var id in publicFns) { this[id] = publicFns[id]; }
 
   privateFns.setSize(size);
-  privateFns.setQuadrantSize(quadrantSize);
+  privateFns.setCellSize(cellSize);
 };
 
 module.exports = Grid2;
