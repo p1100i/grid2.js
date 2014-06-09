@@ -1,10 +1,10 @@
 /**
  * @license
- * grid2 - v0.3.0
+ * grid2 - v0.4.0
  * Copyright (c) 2014 burninggramma
  * https://github.com/burninggramma/grid2.js
  *
- * Compiled: 2014-06-08
+ * Compiled: 2014-06-09
  *
  * grid2 is licensed under the MIT License.
  * http://www.opensource.org/licenses/mit-license.php
@@ -253,15 +253,16 @@
                 },
                 dirty_: 1,
                 size_: null,
-                cellSize_: null
-            }, f = new d(1, 1), g = {
+                cellSize_: null,
+                cellHalfSize_: null
+            }, f = new d(1, 1), g = Math.PI / 2, h = {
                 position: "position_",
                 halfSize: "halfSize_",
                 id: "id_"
-            }, h = function(a, b) {
-                this.id_ = a, this.begPosition_ = b.clone(), this.endPosition_ = this.begPosition_.add(c.cellSize_, !0), 
-                this.objects_ = {}, this.meta_ = {};
-            }, i = {
+            }, i = function(a, b) {
+                this.id_ = a, this.begPosition_ = b.clone(), this.center_ = this.begPosition_.add(c.cellHalfSize_, !0), 
+                this.endPosition_ = this.begPosition_.add(c.cellSize_, !0), this.objects_ = {}, this.meta_ = {};
+            }, j = {
                 cache: function(a, b, d) {
                     c.cache_[a].dirty = c.dirty_, c.cache_[a].queries[b] = d;
                 },
@@ -272,8 +273,8 @@
                     return a.toString() + "_" + b.toString();
                 },
                 checkObjectKeys: function(a, b) {
-                    e.validateNumber(a[g.id], g.id), e.validateVec2(a[g.position], g.position), e.validateVec2(a[g.halfSize], g.halfSize), 
-                    b ? e.hasKey(c.objects_, a[g.id], g.id) : e.hasNoKey(c.objects_, a[g.id], g.id);
+                    e.validateNumber(a[h.id], h.id), e.validateVec2(a[h.position], h.position), e.validateVec2(a[h.halfSize], h.halfSize), 
+                    b ? e.hasKey(c.objects_, a[h.id], h.id) : e.hasNoKey(c.objects_, a[h.id], h.id);
                 },
                 dirty: function(a) {
                     a && c.dirty_++;
@@ -282,47 +283,59 @@
                     return c.ids_++;
                 },
                 getObjectCells: function(a) {
-                    return c.objectCells_[a[g.id]] || (c.objectCells_[a[g.id]] = {}), c.objectCells_[a[g.id]];
+                    return c.objectCells_[a[h.id]] || (c.objectCells_[a[h.id]] = {}), c.objectCells_[a[h.id]];
                 },
-                getOrCreateCell: function(a) {
+                getOrCreateCellByCellPosition: function(a) {
+                    var b = a.toString();
+                    return c.cells_[b] || (c.cells_[b] = new i(b, a)), c.cells_[b];
+                },
+                getOrCreateCellByPosition: function(a) {
                     var b;
-                    return a = i.getCellBegPosition(a), b = a.toString(), c.cells_[b] || (c.cells_[b] = new h(b, a)), c.cells_[b];
+                    return a = j.getCellBegPosition(a), b = a.toString(), c.cells_[b] || (c.cells_[b] = new i(b, a)), c.cells_[b];
                 },
-                getOrCreateCells: function(a) {
-                    var b, d, e = {}, j = a[g.position].subtract(a[g.halfSize], !0), k = a[g.position].add(a[g.halfSize], !0).subtract(f), l = i.getCellBegPosition(j), m = i.getCellBegPosition(k);
+                getOrCreateCellsByObject: function(a) {
+                    var b, d, e = {}, g = a[h.position].subtract(a[h.halfSize], !0), k = a[h.position].add(a[h.halfSize], !0).subtract(f), l = j.getCellBegPosition(g), m = j.getCellBegPosition(k);
                     for (d = l.clone(); d.x <= m.x; d.x += c.cellSize_.x) for (d.y = l.y; d.y <= m.y; d.y += c.cellSize_.y) b = d.toString(), 
-                    e[b] = c.cells_[b] ? c.cells_[b] : c.cells_[b] = new h(b, d);
+                    e[b] = c.cells_[b] ? c.cells_[b] : c.cells_[b] = new i(b, d);
                     return e;
                 },
                 getCellBegPosition: function(a) {
                     return new d(Math.floor(a.x / c.cellSize_.x) * c.cellSize_.x, Math.floor(a.y / c.cellSize_.y) * c.cellSize_.y);
                 },
+                propagateCallbackOnGrid: function(a, b, c, d) {
+                    if (!d[a.id_] && (d[a.id_] = !0, c.call(d.cbThis, d.cbConfig, a.center_))) {
+                        var e, f = a.begPosition_.add(b, !0), h = b.rotate(g, !1, !0);
+                        e = j.getOrCreateCellByCellPosition(f), j.propagateCallbackOnGrid(e, b.clone(), c, d), e = j.getOrCreateCellByCellPosition(f.add(h, !0)), 
+                        j.propagateCallbackOnGrid(e, b.clone(), c, d), e = j.getOrCreateCellByCellPosition(f.subtract(h, !0)), 
+                        j.propagateCallbackOnGrid(e, b.clone(), c, d);
+                    }
+                },
                 setSize: function(a) {
                     e.validateVec2(a), c.size_ = new d(a.x, a.y);
                 },
                 setCellSize: function(a) {
-                    e.validateVec2(a), c.cellSize_ = new d(a.x, a.y);
+                    e.validateVec2(a), c.cellSize_ = new d(a.x, a.y), c.cellHalfSize_ = c.cellSize_.multiply(.5, !0);
                 },
                 setObjId: function(a) {
-                    a[g.id] || (a[g.id] = i.nextId());
+                    a[h.id] || (a[h.id] = j.nextId());
                 },
                 updateObjectCells: function(a) {
-                    var b, c, d = !1, e = i.getObjectCells(a), f = i.getOrCreateCells(a);
-                    for (c in e) f[c] || (d = !0, b = e[c], delete b.objects_[a[g.id]], delete e[c]);
-                    for (c in f) e[c] || (d = !0, b = f[c], b.objects_[a[g.id]] = a, e[c] = b);
-                    i.dirty(d);
+                    var b, c, d = !1, e = j.getObjectCells(a), f = j.getOrCreateCellsByObject(a);
+                    for (c in e) f[c] || (d = !0, b = e[c], delete b.objects_[a[h.id]], delete e[c]);
+                    for (c in f) e[c] || (d = !0, b = f[c], b.objects_[a[h.id]] = a, e[c] = b);
+                    j.dirty(d);
                 }
-            }, j = {
+            }, k = {
                 addObject: function(a) {
-                    i.setObjId(a), i.checkObjectKeys(a), i.updateObjectCells(a), c.objects_[a[g.id]] = a;
+                    j.setObjId(a), j.checkObjectKeys(a), j.updateObjectCells(a), c.objects_[a[h.id]] = a;
                 },
                 addObjects: function(a) {
-                    for (var b = 0; b < a.length; b++) j.addObject(a[b]);
+                    for (var b = 0; b < a.length; b++) k.addObject(a[b]);
                 },
                 debug: function(a, b) {
                     if (void 0 !== a) {
                         c.exposed_ = !!a, c.debugging_ = !!b;
-                        for (var d in i) this[d] = c.exposed_ ? i[d] : void 0;
+                        for (var d in j) this[d] = c.exposed_ ? j[d] : void 0;
                         this.data_ = c.exposed_ ? c : void 0;
                     }
                     return c.debugging_;
@@ -330,19 +343,19 @@
                 getMetaOn: function(a, b) {
                     e.validateVec2(a);
                     var d;
-                    return a = i.getCellBegPosition(a), d = c.cells_[a.toString()], d && d.meta_[b];
+                    return a = j.getCellBegPosition(a), d = c.cells_[a.toString()], d && d.meta_[b];
                 },
                 getObjectsBetween: function(a, b) {
                     e.validateVec2(a), e.validateVec2(b);
-                    var d, f, g = {}, h = i.getCellBegPosition(a), j = i.getCellBegPosition(b), k = i.cacheKey(h, j), l = i.cached("between", k);
+                    var d, f, g = {}, h = j.getCellBegPosition(a), i = j.getCellBegPosition(b), k = j.cacheKey(h, i), l = j.cached("between", k);
                     if (l) return l;
-                    for (f = h.clone(); f.x <= h.x; f.x += c.cellSize_.x) for (f.y = h.y; f.y <= j.y; f.y += c.cellSize_.y) if (d = c.cells_[f.toString()]) for (var m in d.objects_) g[m] = d.objects_[m];
-                    return i.cache("between", k, g), g;
+                    for (f = h.clone(); f.x <= h.x; f.x += c.cellSize_.x) for (f.y = h.y; f.y <= i.y; f.y += c.cellSize_.y) if (d = c.cells_[f.toString()]) for (var m in d.objects_) g[m] = d.objects_[m];
+                    return j.cache("between", k, g), g;
                 },
                 getObjectsOn: function(a) {
                     e.validateVec2(a);
                     var b;
-                    return a = i.getCellBegPosition(a), b = c.cells_[a.toString()], b && b.objects_;
+                    return a = j.getCellBegPosition(a), b = c.cells_[a.toString()], b && b.objects_;
                 },
                 getCellSize: function() {
                     return c.cellSize_.clone();
@@ -351,23 +364,32 @@
                     return c.size_.clone();
                 },
                 hasObjectsOn: function(a) {
-                    var b = j.getObjectsOn(a);
+                    var b = k.getObjectsOn(a);
                     return !(!b || !Object.keys(b).length);
                 },
+                propagateCallbackFromPoint: function(a, b, f, g) {
+                    e.validateVec2(a);
+                    var h = j.getOrCreateCellByPosition(a), i = {
+                        cbConfig: g,
+                        cbThis: f
+                    };
+                    j.propagateCallbackOnGrid(h, new d(c.cellSize_.x, 0), b, i), delete i[h.id_], j.propagateCallbackOnGrid(h, new d(-c.cellSize_.x, 0), b, i), 
+                    delete i[h.id_], j.propagateCallbackOnGrid(h, new d(0, c.cellSize_.y), b, i), delete i[h.id_], j.propagateCallbackOnGrid(h, new d(0, -c.cellSize_.y), b, i);
+                },
                 updateObject: function(a) {
-                    i.checkObjectKeys(a, !0), i.updateObjectCells(a);
+                    j.checkObjectKeys(a, !0), j.updateObjectCells(a);
                 },
                 updateObjects: function(a) {
-                    for (var b = 0; b < a.length; b++) j.updateObject(a[b]);
+                    for (var b = 0; b < a.length; b++) k.updateObject(a[b]);
                 },
                 setMetaOn: function(a, b, c) {
                     e.validateVec2(a);
-                    var d = i.getOrCreateCell(a);
+                    var d = j.getOrCreateCellByPosition(a);
                     d.meta_[b] = c;
                 }
             };
-            for (var k in j) this[k] = j[k];
-            i.setSize(a), i.setCellSize(b);
+            for (var l in k) this[l] = k[l];
+            j.setSize(a), j.setCellSize(b);
         }, b.exports = c;
     }, {
         "my-helper": 2,

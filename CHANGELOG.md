@@ -1,3 +1,7 @@
+- 0.4.0
+    - added .propagateCallbackFromPoint for using the grid
+      on raycasting purposes
+
 - 0.3.0
     - also added travis-ci
     - grid quadrants renamed to cells
