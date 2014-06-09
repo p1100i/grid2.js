@@ -1,4 +1,5 @@
 - 0.3.0
+    - also added travis-ci
     - grid quadrants renamed to cells
     - meta attribute storage to grid cells
 
