@@ -212,4 +212,8 @@ describe('Grid2', function(){
   describe('#setMetaOn', function() {
     it('should be tested')
   });
+
+  describe('#propagateCallbackFromPoint ', function() {
+    it('should be tested')
+  });
 });

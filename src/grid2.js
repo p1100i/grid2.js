@@ -14,10 +14,12 @@ Grid2 = function Grid2(size, cellSize) {
       cache_        : { between : { dirty : 0, queries : {} } },
       dirty_        : 1,
       size_         : null,
-      cellSize_     : null
+      cellSize_     : null,
+      cellHalfSize_ : null
     },
 
-    unit = new Vec2(1, 1),
+    unit    = new Vec2(1, 1),
+    halfPI  = Math.PI / 2,
 
     // Inserted object keys.
     keys = {
@@ -29,6 +31,7 @@ Grid2 = function Grid2(size, cellSize) {
     Grid2Cell = function Grid2Cell(id, position) {
       this.id_          = id;
       this.begPosition_ = position.clone();
+      this.center_      = this.begPosition_.add(data.cellHalfSize_, true);
       this.endPosition_ = this.begPosition_.add(data.cellSize_, true);
       this.objects_     = {};
       this.meta_        = {};
@@ -80,7 +83,17 @@ Grid2 = function Grid2(size, cellSize) {
         return data.objectCells_[object[keys.id]];
       },
 
-      getOrCreateCell : function getOrCreateCell(position) {
+      getOrCreateCellByCellPosition : function getOrCreateCellByCellPosition(position) {
+        var key = position.toString();
+
+        if (!data.cells_[key]) {
+          data.cells_[key] = new Grid2Cell(key, position);
+        }
+
+        return data.cells_[key];
+      },
+
+      getOrCreateCellByPosition : function getOrCreateCellByPosition(position) {
         var key;
 
         position  = privateFns.getCellBegPosition(position);
@@ -93,7 +106,7 @@ Grid2 = function Grid2(size, cellSize) {
         return data.cells_[key];
       },
 
-      getOrCreateCells : function getOrCreateCells(object) {
+      getOrCreateCellsByObject : function getOrCreateCellsByObject(object) {
         var
           key,
           position,
@@ -129,14 +142,40 @@ Grid2 = function Grid2(size, cellSize) {
         );
       },
 
+      propagateCallbackOnGrid : function propagateCallbackOnGrid(cell, diff, cb, cbMemory) {
+        if (cbMemory[cell.id_]) { return; }
+
+        cbMemory[cell.id_] = true;
+
+        if (!cb.call(cbMemory.cbThis, cbMemory.cbConfig, cell.center_)) { return; }
+
+        var nextCell,
+            nextCellPosition  = cell.begPosition_.add(diff, true),
+            rotatedDiff       = diff.rotate(halfPI, false, true);
+
+        // Use the given direction differnce and recall the function.
+        nextCell = privateFns.getOrCreateCellByCellPosition(nextCellPosition);
+        privateFns.propagateCallbackOnGrid(nextCell, diff.clone(), cb, cbMemory);
+
+        // Call to its neighbours too.
+        nextCell = privateFns.getOrCreateCellByCellPosition(nextCellPosition.add(rotatedDiff, true));
+        privateFns.propagateCallbackOnGrid(nextCell, diff.clone(), cb, cbMemory);
+
+        nextCell = privateFns.getOrCreateCellByCellPosition(nextCellPosition.subtract(rotatedDiff, true));
+        privateFns.propagateCallbackOnGrid(nextCell, diff.clone(), cb, cbMemory);
+      },
+
       setSize : function setSize(size) {
         MyHelper.validateVec2(size);
+
         data.size_ = new Vec2(size.x, size.y);
       },
 
       setCellSize : function setCellSize(cellSize) {
         MyHelper.validateVec2(cellSize);
-        data.cellSize_ = new Vec2(cellSize.x, cellSize.y);
+
+        data.cellSize_      = new Vec2(cellSize.x, cellSize.y);
+        data.cellHalfSize_  = data.cellSize_.multiply(0.5, true);
       },
 
       setObjId : function setObjId(object) {
@@ -151,7 +190,7 @@ Grid2 = function Grid2(size, cellSize) {
           cellId,
           dirt     = false,
           cells    = privateFns.getObjectCells(object),
-          newCells = privateFns.getOrCreateCells(object);
+          newCells = privateFns.getOrCreateCellsByObject(object);
         
         for (cellId in cells) {
           if (newCells[cellId]) {
@@ -283,6 +322,25 @@ Grid2 = function Grid2(size, cellSize) {
         return !!(objects && Object.keys(objects).length);
       },
 
+      propagateCallbackFromPoint : function propagateCallbackFromPoint(position, cb, cbThis, cbConfig) {
+        MyHelper.validateVec2(position);
+
+        var
+          cell          = privateFns.getOrCreateCellByPosition(position),
+          cbMemory      = { cbConfig : cbConfig, cbThis : cbThis };
+
+        privateFns.propagateCallbackOnGrid(cell, new Vec2( data.cellSize_.x, 0), cb, cbMemory);
+        delete cbMemory[cell.id_];
+
+        privateFns.propagateCallbackOnGrid(cell, new Vec2(-data.cellSize_.x, 0), cb, cbMemory);
+        delete cbMemory[cell.id_];
+
+        privateFns.propagateCallbackOnGrid(cell, new Vec2(0,  data.cellSize_.y), cb, cbMemory);
+        delete cbMemory[cell.id_];
+
+        privateFns.propagateCallbackOnGrid(cell, new Vec2(0, -data.cellSize_.y), cb, cbMemory);
+      },
+
       updateObject : function updateObject(object) {
         privateFns.checkObjectKeys(object, true);
         privateFns.updateObjectCells(object);
@@ -297,7 +355,7 @@ Grid2 = function Grid2(size, cellSize) {
       setMetaOn : function setMetaOn(position, key, val) {
         MyHelper.validateVec2(position);
 
-        var cell = privateFns.getOrCreateCell(position);
+        var cell = privateFns.getOrCreateCellByPosition(position);
 
         cell.meta_[key] = val;
       }
