@@ -253,14 +253,18 @@ Grid2 = function Grid2(size, cellSize) {
       },
 
       getMetaOn : function getMetaOn(position, key) {
-          MyHelper.validateVec2(position);
+        MyHelper.validateVec2(position);
 
-          var cell;
+        var cell;
 
-          position = privateFns.getCellBegPosition(position);
-          cell = data.cells_[position.toString()];
+        position = privateFns.getCellBegPosition(position);
+        cell = data.cells_[position.toString()];
 
-          return cell && cell.meta_[key];
+        return cell && cell.meta_[key];
+      },
+
+      getObjects : function getObjects() {
+        return data.objects_;
       },
 
       getObjectsBetween : function getObjectsBetween(begPosition, endPosition) {
