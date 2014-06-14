@@ -11,7 +11,7 @@ describe('Grid2', function(){
 
     this.between = {
       beg : new Vec2(10, 10),
-      end : new Vec2(30, 30),
+      end : new Vec2(40, 35),
       objects : [
         { position_ : new Vec2(15, 15), halfSize_ : new Vec2(3, 2) },
         { position_ : new Vec2(20, 20), halfSize_ : new Vec2(3, 2) },
@@ -153,6 +153,8 @@ describe('Grid2', function(){
     context('with objects', function() {
       beforeEach(function() {
         this.grid.addObjects(this.between.objects);
+        this.outerObject = { position_ : new Vec2(88, 44), halfSize_ : new Vec2(3, 2) };
+        this.grid.addObject(this.outerObject);
       });
 
       context('outside the bounds', function() {
@@ -168,7 +170,19 @@ describe('Grid2', function(){
         it('should return the objects', function() {
           this.grid.getObjectsBetween(this.between.beg, this.between.end).should.eql({
             1 : this.between.objects[0],
-            2 : this.between.objects[1]
+            2 : this.between.objects[1],
+            3 : this.between.objects[2]
+          });
+        });
+      });
+
+      context('inside bigger bounds', function() {
+        it('should return the objects', function() {
+          this.grid.getObjectsBetween(new Vec2(-100, -100), new Vec2(200, 200)).should.eql({
+            1 : this.between.objects[0],
+            2 : this.between.objects[1],
+            3 : this.between.objects[2],
+            4 : this.outerObject
           });
         });
       });

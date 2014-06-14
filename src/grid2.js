@@ -284,7 +284,7 @@ Grid2 = function Grid2(size, cellSize) {
           return cached;
         }
 
-        for (position = betweenBegPosition.clone(); position.x <= betweenBegPosition.x; position.x += data.cellSize_.x) {
+        for (position = betweenBegPosition.clone(); position.x <= betweenEndPosition.x; position.x += data.cellSize_.x) {
           for (position.y = betweenBegPosition.y; position.y <= betweenEndPosition.y; position.y += data.cellSize_.y) {
             cell = data.cells_[position.toString()];
 
