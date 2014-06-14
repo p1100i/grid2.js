@@ -1,10 +1,10 @@
 /**
  * @license
- * grid2 - v0.4.0
+ * grid2 - v0.4.1
  * Copyright (c) 2014 burninggramma
  * https://github.com/burninggramma/grid2.js
  *
- * Compiled: 2014-06-09
+ * Compiled: 2014-06-14
  *
  * grid2 is licensed under the MIT License.
  * http://www.opensource.org/licenses/mit-license.php
@@ -345,11 +345,14 @@
                     var d;
                     return a = j.getCellBegPosition(a), d = c.cells_[a.toString()], d && d.meta_[b];
                 },
+                getObjects: function() {
+                    return c.objects_;
+                },
                 getObjectsBetween: function(a, b) {
                     e.validateVec2(a), e.validateVec2(b);
                     var d, f, g = {}, h = j.getCellBegPosition(a), i = j.getCellBegPosition(b), k = j.cacheKey(h, i), l = j.cached("between", k);
                     if (l) return l;
-                    for (f = h.clone(); f.x <= h.x; f.x += c.cellSize_.x) for (f.y = h.y; f.y <= i.y; f.y += c.cellSize_.y) if (d = c.cells_[f.toString()]) for (var m in d.objects_) g[m] = d.objects_[m];
+                    for (f = h.clone(); f.x <= i.x; f.x += c.cellSize_.x) for (f.y = h.y; f.y <= i.y; f.y += c.cellSize_.y) if (d = c.cells_[f.toString()]) for (var m in d.objects_) g[m] = d.objects_[m];
                     return j.cache("between", k, g), g;
                 },
                 getObjectsOn: function(a) {
