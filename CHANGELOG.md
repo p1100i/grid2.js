@@ -1,3 +1,7 @@
+- 0.4.1
+    - fixes spelling issue in .getObjectsBetween
+    - also adds more specs
+
 - 0.4.0
     - added .propagateCallbackFromPoint for using the grid
       on raycasting purposes
