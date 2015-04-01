@@ -1,10 +1,10 @@
 /**
  * @license
- * grid2 - v0.4.1
- * Copyright (c) 2014 burninggramma
- * https://github.com/burninggramma/grid2.js
+ * grid2 - v0.4.2
+ * Copyright (c) 2014-2015 p1100i
+ * https://github.com/p1100i/grid2.js
  *
- * Compiled: 2014-06-14
+ * Compiled: 2015-04-01
  *
  * grid2 is licensed under the MIT License.
  * http://www.opensource.org/licenses/mit-license.php

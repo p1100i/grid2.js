@@ -1,21 +1,21 @@
 {
   "name"        : "grid2",
   "description" : "JavaScript implementation of a static spatial grid index in two dimension.",
-  "author"      : "Burning Gramma <burninggramma@gmail.com>",
-  "version"     : "0.4.1",
+  "author"      : "peters <p1100i.dev@gmail.com>",
+  "version"     : "0.4.2",
   "main"        : "src/grid2.js",
   "license"     : "MIT",
   "licenseUrl"  : "http://www.opensource.org/licenses/mit-license.php",
-  "homepage"    : "http://burninggramma.github.io/grid2.js",
+  "homepage"    : "http://p1100i.github.io/grid2.js",
   "repository"  : {
     "type" : "git",
-    "url"  : "https://github.com/burninggramma/grid2.js"
+    "url"  : "https://github.com/p1100i/grid2.js"
   },
   "engines"     : {
     "node": ">= 0.10.0"
   },
   "scripts"     : {
-    "test"       : "mocha test/*.js",
+    "test"       : "mocha test/**/*.js",
     "test-watch" : "grunt watch",
     "build"      : "grunt"
   },
