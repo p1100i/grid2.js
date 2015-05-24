@@ -11,8 +11,8 @@ If there is a characteristic avarage size for objects in your applications two d
 [MIT License][git-LICENSE]
 
   [git-LICENSE]: LICENSE
-  [travis-img-src]: https://travis-ci.org/burninggramma/grid2.js.png?branch=master
-  [travis-a-href]: https://travis-ci.org/burninggramma/grid2.js
+  [travis-img-src]: https://travis-ci.org/p1100i/grid2.js.png?branch=master
+  [travis-a-href]: https://travis-ci.org/p1100i/grid2.js
   [npm]: https://www.npmjs.org/package/grid2
   [browserify]: http://browserify.org/
-  [github-quadtree2]: https://github.com/burninggramma/quadtree2.js
+  [github-quadtree2]: https://github.com/p1100i/quadtree2.js
