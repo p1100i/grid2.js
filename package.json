@@ -1,38 +1,23 @@
 {
-  "name"        : "grid2",
-  "description" : "JavaScript implementation of a static spatial grid index in two dimension.",
-  "author"      : "peters <p1100i.dev@gmail.com>",
-  "version"     : "0.4.2",
-  "main"        : "src/grid2.js",
-  "license"     : "MIT",
-  "licenseUrl"  : "http://www.opensource.org/licenses/mit-license.php",
-  "homepage"    : "http://p1100i.github.io/grid2.js",
-  "repository"  : {
-    "type" : "git",
-    "url"  : "https://github.com/p1100i/grid2.js"
+  "name": "grid2",
+  "description": "JavaScript implementation of a static spatial grid index in two dimension.",
+  "author": "peters <p1100i.dev@gmail.com>",
+  "version": "0.5.0",
+  "main": "src/grid2.js",
+  "license": "MIT",
+  "licenseUrl": "http://www.opensource.org/licenses/mit-license.php",
+  "homepage": "http://p1100i.github.io/grid2.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/p1100i/grid2.js"
   },
-  "engines"     : {
+  "engines": {
     "node": ">= 0.10.0"
   },
-  "scripts"     : {
-    "test"       : "mocha test/**/*.js",
-    "test-watch" : "grunt watch",
-    "build"      : "grunt"
-  },
-  "dependencies" : {
-    "vec2"      : "latest",
-    "my-helper" : "latest"
-  },
-  "devDependencies": {
-    "mocha"               : "latest",
-    "should"              : "latest",
-    "grunt"               : "latest",
-    "grunt-cli"           : "latest",
-    "grunt-browserify"    : "latest",
-    "grunt-contrib-jshint": "latest",
-    "grunt-contrib-watch" : "latest",
-    "grunt-contrib-uglify": "latest",
-    "grunt-simple-mocha"  : "latest"
+  "scripts": {
+    "test": "mocha test/**/*.js",
+    "test-watch": "grunt watch",
+    "build": "grunt"
   },
   "keywords": [
     "grid",
@@ -40,5 +25,20 @@
     "2d",
     "collision",
     "detection"
-  ]
+  ],
+  "dependencies": {
+    "my-helper": "^0.8.0",
+    "vec2": "^1.6.0"
+  },
+  "devDependencies": {
+    "grunt": "^0.4.5",
+    "grunt-browserify": "^4.0.1",
+    "grunt-cli": "^0.1.13",
+    "grunt-contrib-jshint": "^0.11.3",
+    "grunt-contrib-uglify": "^0.10.0",
+    "grunt-contrib-watch": "^0.6.1",
+    "grunt-simple-mocha": "^0.4.0",
+    "mocha": "^2.3.3",
+    "should": "^7.1.1"
+  }
 }
