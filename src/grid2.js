@@ -11,13 +11,19 @@ Grid2 = function Grid2(config) {
     objects       = {},
     cells         = {},
     objectCells   = {},
-    cache         = { between : { dirty : 0, queries : {} } },
     dirty         = 1,
     idKey         = 'id',
     positionKey   = 'pos',
-    halfSizeKey   = 'halfSize',
+    radiusKey     = 'rad',
     UNIT          = new Vec2(1, 1),
     HALF_PI       = Math.PI / 2,
+
+    cache = {
+      'between' : {
+        'dirty'   : 0,
+        'queries' : {}
+      }
+    },
 
     Grid2Cell = function Grid2Cell(id, position) {
       this.id          = id;
@@ -86,8 +92,10 @@ Grid2 = function Grid2(config) {
         key,
         position,
         objectCells       = {},
-        objectBegPosition = object[positionKey].subtract(object[halfSizeKey], true),
-        objectEndPosition = object[positionKey].add(object[halfSizeKey], true).subtract(UNIT),
+        objectRadius      = object[radiusKey],
+        objectPosition    = object[positionKey],
+        objectBegPosition = objectPosition.subtract(objectRadius, objectRadius, true),
+        objectEndPosition = objectPosition.add(objectRadius, objectRadius, true).subtract(UNIT),
         cellBegPosition   = getCellBegPosition(objectBegPosition),
         cellEndPosition   = getCellBegPosition(objectEndPosition);
 
@@ -248,12 +256,21 @@ Grid2 = function Grid2(config) {
     },
 
     getObjectsOn = function getObjectsOn(position) {
-        var cell;
+        var
+          id,
+          cell,
+          cellObjects,
+          objects = {};
 
-        position = getCellBegPosition(position);
-        cell = cells[position.toString()];
+        position    = getCellBegPosition(position);
+        cell        = cells[position.toString()];
+        cellObjects = cell && cell.objects;
 
-        return cell && cell.objects;
+        for (id in cellObjects) {
+          objects[id] = cellObjects[id];
+        }
+
+        return objects;
     },
 
     getCellSize = function getCellSize() {
@@ -333,6 +350,8 @@ Grid2 = function Grid2(config) {
   this.updateObject               = updateObject;
   this.updateObjects              = updateObjects;
   this.setMetaOn                  = setMetaOn;
+
+  return this;
 };
 
 module.exports = Grid2;

@@ -16,9 +16,9 @@ describe('Grid2', function(){
       beg : new Vec2(10, 10),
       end : new Vec2(40, 35),
       objects : [
-        { 'pos' : new Vec2(15, 15), 'halfSize' : new Vec2(3, 2) },
-        { 'pos' : new Vec2(20, 20), 'halfSize' : new Vec2(3, 2) },
-        { 'pos' : new Vec2(32, 32), 'halfSize' : new Vec2(1, 1) }
+        { 'pos' : new Vec2(15, 15), 'rad' : 3 },
+        { 'pos' : new Vec2(20, 20), 'rad' : 3 },
+        { 'pos' : new Vec2(32, 32), 'rad' : 1 }
       ]
     };
 
@@ -37,7 +37,7 @@ describe('Grid2', function(){
   describe('.addObject()', function() {
     context('with an object without id', function() {
       it('should generate id for it', function() {
-        var object = { 'pos' : new Vec2(1, 2), 'halfSize' : new Vec2(3, 4) };
+        var object = { 'pos' : new Vec2(1, 2), 'rad' : 4 };
 
         this.grid.addObject(object);
         object.id.should.eql(1);
@@ -46,7 +46,7 @@ describe('Grid2', function(){
 
     context('with an object with id', function() {
       it('should not reset its id', function() {
-        var object = { 'id' : 2, 'pos' : new Vec2(1, 2), 'halfSize' : new Vec2(3, 4) };
+        var object = { 'id' : 2, 'pos' : new Vec2(1, 2), 'rad' : 4 };
 
         this.grid.addObject(object);
         object.id.should.eql(2);
@@ -56,7 +56,7 @@ describe('Grid2', function(){
     context('with an object', function() {
       beforeEach(function() {
         this.object.pos = new Vec2(13, 15);
-        this.object.halfSize = new Vec2(3, 2);
+        this.object.rad = 3;
 
         this.grid.addObject(this.object);
         this.grid.debug(true);
@@ -79,7 +79,7 @@ describe('Grid2', function(){
     context('with an object positioned on borders', function() {
       beforeEach(function() {
         this.object.pos = new Vec2(16, 14);
-        this.object.halfSize = new Vec2(4, 4);
+        this.object.rad = 4;
         this.grid.addObject(this.object);
         this.grid.debug(true);
       });
@@ -96,7 +96,7 @@ describe('Grid2', function(){
     context('with a big object', function() {
       beforeEach(function() {
         this.object.pos = new Vec2(41, 40);
-        this.object.halfSize = new Vec2(10, 10);
+        this.object.rad = 10;
 
         this.grid.addObject(this.object);
         this.grid.debug(true);
@@ -142,7 +142,7 @@ describe('Grid2', function(){
     context('with objects', function() {
       beforeEach(function() {
         this.grid.addObjects(this.between.objects);
-        this.outerObject = { 'pos' : new Vec2(88, 44), 'halfSize' : new Vec2(3, 2) };
+        this.outerObject = { 'pos' : new Vec2(88, 44), 'rad' : 3 };
         this.grid.addObject(this.outerObject);
       });
 
