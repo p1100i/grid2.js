@@ -1,6 +1,8 @@
+/*jshint expr: true*/
+/*exported should*/
 var
+  Grid2         = require('../../src/grid2'),
   Vec2          = require('vec2'),
-  Grid2         = require('../src/grid2'),
   should        = require('should');
 
 describe('Grid2 - e2e - README', function() {

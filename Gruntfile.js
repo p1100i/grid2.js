@@ -30,12 +30,13 @@ module.exports = function(grunt) {
         node        : true,
         noempty     : true,
         nonew       : true,
+        mocha       : true,
         quotmark    : 'single',
         undef       : true,
         unused      : true,
         trailing    : true
       },
-      app:  ['src/*.js', 'index/main.js']
+      app:  ['src/*.js', 'test/**/*.js', 'index/main.js']
     },
 
     browserify: {
@@ -68,7 +69,7 @@ module.exports = function(grunt) {
     },
 
     simplemocha : {
-      all: { src : ['test/*.js'] },
+      all: { src : ['test/spec/**/*.js'] },
       options : {
         reporter: 'spec',
         slow: 200,
@@ -78,7 +79,7 @@ module.exports = function(grunt) {
 
     watch : {
       scripts : {
-        files : ['test/*.js', 'src/*.js', 'index/main.js'],
+        files : ['test/**/*.js', 'src/*.js', 'index/main.js'],
         tasks : ['test']
       }
     }

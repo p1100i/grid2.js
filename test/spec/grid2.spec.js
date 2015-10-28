@@ -1,8 +1,8 @@
+/*jshint expr: true*/
 var
+  Grid2         = require('../../src/grid2'),
   Vec2          = require('vec2'),
-  Grid2         = require('../src/grid2'),
   should        = require('should'),
-  rand          = function rand(num) { return Math.floor(Math.random() * num); },
   key           = function key(x, y) { return new Vec2(x,y).toString(); };
 
 describe('Grid2', function(){
@@ -199,18 +199,18 @@ describe('Grid2', function(){
   });
 
   describe('.getOrCreateCell()', function() {
-    it('should be tested')
+    it('should be tested');
   });
 
   describe('.getMetaOn()', function() {
-    it('should be tested')
+    it('should be tested');
   });
 
   describe('.setMetaOn()', function() {
-    it('should be tested')
+    it('should be tested');
   });
 
   describe('.propagateCallbackFromPoint() ', function() {
-    it('should be tested')
+    it('should be tested');
   });
 });
