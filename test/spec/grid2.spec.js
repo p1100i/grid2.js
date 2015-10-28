@@ -59,19 +59,24 @@ describe('Grid2', function(){
         this.object.rad = 3;
 
         this.grid.addObject(this.object);
-        this.grid.debug(true);
+
+        var inspect = this.grid.inspect();
+
+        this.objects  = inspect.objects;
+        this.cells    = inspect.cells;
+
       });
 
       it('should register the object in data', function() {
-        this.grid.objects[this.object.id].should.be.ok;
+        this.objects[this.object.id].should.be.ok;
       });
 
       it('should register cells in data', function() {
-        this.grid.cells[key(10, 10)].begPosition.x.should.eql(10);
+        this.cells[key(10, 10)].begPosition.x.should.eql(10);
       });
 
       it('should register the object for the cell in data', function() {
-        this.grid.cells[key(10, 10)].objects['1'].should.eql(this.object);
+        this.cells[key(10, 10)].objects['1'].should.eql(this.object);
       });
 
     });
@@ -81,15 +86,18 @@ describe('Grid2', function(){
         this.object.pos = new Vec2(16, 14);
         this.object.rad = 4;
         this.grid.addObject(this.object);
-        this.grid.debug(true);
+
+        var inspect = this.grid.inspect();
+
+        this.objects  = inspect.objects;
+        this.cells    = inspect.cells;
       });
 
       it('should register the object for the proper cells', function() {
-        console.log(this.grid.cells);
-        Object.keys(this.grid.cells).length.should.eql(1);
-        this.grid.cells[key(10, 10)].objects['1'].should.eql(this.object);
-        should(this.grid.cells[key(20, 10)]).be.not.ok;
-        should(this.grid.cells[key(10, 20)]).be.not.ok;
+        Object.keys(this.cells).length.should.eql(1);
+        this.cells[key(10, 10)].objects['1'].should.eql(this.object);
+        should(this.cells[key(20, 10)]).be.not.ok;
+        should(this.cells[key(10, 20)]).be.not.ok;
       });
     });
 
@@ -99,18 +107,22 @@ describe('Grid2', function(){
         this.object.rad = 10;
 
         this.grid.addObject(this.object);
-        this.grid.debug(true);
+
+        var inspect = this.grid.inspect();
+
+        this.objects  = inspect.objects;
+        this.cells    = inspect.cells;
       });
 
       it('should register the object for the cells in data', function() {
-        should(this.grid.cells[key(40, 20)]).be.not.ok;
-        should(this.grid.cells[key(30, 20)]).be.not.ok;
-        should(this.grid.cells[key(40, 50)]).be.not.ok;
-        this.grid.cells[key(30, 30)].objects['1'].should.eql(this.object);
-        this.grid.cells[key(40, 30)].objects['1'].should.eql(this.object);
-        this.grid.cells[key(30, 40)].objects['1'].should.eql(this.object);
-        this.grid.cells[key(40, 40)].objects['1'].should.eql(this.object);
-        this.grid.cells[key(50, 40)].objects['1'].should.eql(this.object);
+        should(this.cells[key(40, 20)]).be.not.ok;
+        should(this.cells[key(30, 20)]).be.not.ok;
+        should(this.cells[key(40, 50)]).be.not.ok;
+        this.cells[key(30, 30)].objects['1'].should.eql(this.object);
+        this.cells[key(40, 30)].objects['1'].should.eql(this.object);
+        this.cells[key(30, 40)].objects['1'].should.eql(this.object);
+        this.cells[key(40, 40)].objects['1'].should.eql(this.object);
+        this.cells[key(50, 40)].objects['1'].should.eql(this.object);
       });
     });
   });
@@ -118,15 +130,19 @@ describe('Grid2', function(){
   describe('.updateObject()', function() {
     beforeEach(function() {
       this.grid.addObject(this.object);
-      this.grid.debug(true);
+
+      var inspect = this.grid.inspect();
+
+      this.objects  = inspect.objects;
+      this.cells    = inspect.cells;
     });
 
     it('should update them cells', function() {
       this.object.pos = new Vec2(62, 48);
       this.grid.updateObject(this.object);
 
-      should(this.grid.cells[key(10, 10)].objects['1']).be.not.ok;
-      this.grid.cells[key(60, 40)].objects['1'].should.eql(this.object);
+      should(this.cells[key(10, 10)].objects['1']).be.not.ok;
+      this.cells[key(60, 40)].objects['1'].should.eql(this.object);
     });
   });
 

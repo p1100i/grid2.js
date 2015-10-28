@@ -219,10 +219,6 @@ Grid2 = function Grid2(config) {
       return cell && cell.meta[key];
     },
 
-    getObjects = function getObjects() {
-      return objects;
-    },
-
     getObjectsBetween = function getObjectsBetween(begPosition, endPosition) {
       var
         id,
@@ -323,9 +319,11 @@ Grid2 = function Grid2(config) {
       cell.meta[key] = val;
     },
 
-    debug = function debug() {
-      this.objects  = objects;
-      this.cells    = cells;
+    inspect = function inspect() {
+      return {
+        'objects' : objects,
+        'cells'   : cells
+      };
     },
 
     init = function init(config) {
@@ -338,11 +336,9 @@ Grid2 = function Grid2(config) {
 
   this.addObject                  = addObject;
   this.addObjects                 = addObjects;
-  this.debug                      = debug;
   this.getMetaOn                  = getMetaOn;
-  this.getObjects                 = getObjects;
-  this.getObjectsBetween          = getObjectsBetween;
   this.getObjectsOn               = getObjectsOn;
+  this.getObjectsBetween          = getObjectsBetween;
   this.getCellSize                = getCellSize;
   this.getSize                    = getSize;
   this.hasObjectsOn               = hasObjectsOn;
@@ -350,6 +346,7 @@ Grid2 = function Grid2(config) {
   this.updateObject               = updateObject;
   this.updateObjects              = updateObjects;
   this.setMetaOn                  = setMetaOn;
+  this.inspect                    = inspect;
 
   return this;
 };
