@@ -194,7 +194,10 @@ Grid2 = function Grid2(config) {
     },
 
     addObjects = function addObjects(objects) {
-      for (var i = 0; i < objects.length; i++) {
+      var
+        i;
+
+      for (i = 0; i < objects.length; i++) {
         addObject(objects[i]);
       }
     },
@@ -214,6 +217,7 @@ Grid2 = function Grid2(config) {
 
     getObjectsBetween = function getObjectsBetween(begPosition, endPosition) {
       var
+        id,
         cell,
         position,
         objects             = {},
@@ -232,7 +236,7 @@ Grid2 = function Grid2(config) {
 
           if (!cell) { continue; }
 
-          for (var id in cell.objects) {
+          for (id in cell.objects) {
             objects[id] = cell.objects[id];
           }
         }
@@ -288,7 +292,10 @@ Grid2 = function Grid2(config) {
     },
 
     updateObjects = function updateObjects(objects) {
-      for (var i = 0; i < objects.length; i++) {
+      var
+        i;
+
+      for (i = 0; i < objects.length; i++) {
         updateObject(objects[i]);
       }
     },
