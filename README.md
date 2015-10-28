@@ -144,9 +144,21 @@ Returns metadata set of a cell on the position. For setting metadata, see above.
 Returns some inner variables of the grid. Useful for debugging/testing.
 - @return {Object} containing the cells and objects of the grid.
 
+## Releases
+For more info see the [CHANGELOG.md][changelog].
+- 0.5.0 (2015-10-29)
+- 0.4.1 (2014-06-09)
+- 0.4.0 (2014-06-08)
+- 0.3.0 (2014-06-08)
+- 0.2.0 (2014-04-27)
+- 0.1.0 (2014-04-27)
+- 0.0.1 (2014-04-26)
+
+
 ## License
 [MIT License][git-LICENSE]
 
+  [changelog]: https://github.com/p1100i/grid2.js/blob/master/CHANGELOG.md
   [minified]: https://github.com/p1100i/grid2.js/blob/master/grid2.min.js
   [git-LICENSE]: LICENSE
   [travis-img-src]: https://travis-ci.org/p1100i/grid2.js.png?branch=master
