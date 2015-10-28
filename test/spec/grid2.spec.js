@@ -222,10 +222,6 @@ describe('Grid2', function(){
     });
   });
 
-  describe('.propagateCallbackFromPoint() ', function() {
-    it('should be tested');
-  });
-
   describe('.setMetaOn()', function() {
     it('should be tested');
   });
