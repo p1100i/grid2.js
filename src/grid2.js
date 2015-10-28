@@ -1,50 +1,41 @@
 var
-  Vec2     = require('vec2'),
-  MyHelper = require('my-helper'),
+  Vec2 = require('vec2'),
   Grid2;
 
-Grid2 = function Grid2(size, cellSize) {
+Grid2 = function Grid2(config) {
   var
-    // Container for private data.
-    data = {
-      ids_          : 1,
-      objects_      : {},
-      cells_        : {},
-      objectCells_  : {},
-      cache_        : { between : { dirty : 0, queries : {} } },
-      dirty_        : 1,
-      size_         : null,
-      cellSize_     : null,
-      cellHalfSize_ : null
-    },
-
-    unit    = new Vec2(1, 1),
-    halfPI  = Math.PI / 2,
-
-    // Inserted object keys.
-    keys = {
-      position  : 'position_',
-      halfSize  : 'halfSize_',
-      id        : 'id_'
-    },
+    size,
+    cellSize,
+    cellHalfSize,
+    ids           = 1,
+    objects       = {},
+    cells         = {},
+    objectCells   = {},
+    cache         = { between : { dirty : 0, queries : {} } },
+    dirty         = 1,
+    idKey         = 'id',
+    positionKey   = 'pos',
+    halfSizeKey   = 'halfSize',
+    UNIT          = new Vec2(1, 1),
+    HALF_PI       = Math.PI / 2,
 
     Grid2Cell = function Grid2Cell(id, position) {
       this.id_          = id;
       this.begPosition_ = position.clone();
-      this.center_      = this.begPosition_.add(data.cellHalfSize_, true);
-      this.endPosition_ = this.begPosition_.add(data.cellSize_, true);
-      this.objects_     = {};
+      this.center_      = this.begPosition_.add(cellHalfSize, true);
+      this.endPosition_ = this.begPosition_.add(cellSize, true);
+      this.objects      = {};
       this.meta_        = {};
     },
 
-    cache = function cache(type, key, objects) {
-      data.cache_[type].dirty        = data.dirty_;
-      data.cache_[type].queries[key] = objects;
+    cacheObjects = function cacheObjects(type, key, objects) {
+      cache[type].dirty        = dirty;
+      cache[type].queries[key] = objects;
     },
 
     getCached = function getCached(type, key) {
-      if (data.cache_[type].dirty === data.dirty_ && data.cache_[type].queries[key]) {
-        return data.cache_[type].queries[key];
+      if (cache[type].dirty === dirty && cache[type].queries[key]) {
+        return cache[type].queries[key];
       }
     },
 
@@ -52,43 +43,30 @@ Grid2 = function Grid2(size, cellSize) {
       return begPosition.toString() + '_' + endPosition.toString();
     },
 
-    checkObjectKeys = function checkObjectKeys(object, shouldBeAdded) {
-      MyHelper.validateNumber(object[keys.id], keys.id);
-
-      MyHelper.validateVec2(object[keys.position],  keys.position);
-      MyHelper.validateVec2(object[keys.halfSize],  keys.halfSize);
-
-      if (shouldBeAdded) {
-        MyHelper.hasKey(data.objects_, object[keys.id], keys.id);
-      } else {
-        MyHelper.hasNoKey(data.objects_, object[keys.id], keys.id);
-      }
-    },
-
-    dirty = function dirty(dirt) {
-      if (dirt) { data.dirty_++; }
+    setDirty = function setDirty(dirt) {
+      if (dirt) { dirty++; }
     },
 
     nextId = function nextId() {
-      return data.ids_++;
+      return ids++;
     },
 
     getObjectCells = function getObjectCells(object) {
-      if (!data.objectCells_[object[keys.id]]) {
-        data.objectCells_[object[keys.id]] = {};
+      if (!objectCells[object[idKey]]) {
+        objectCells[object[idKey]] = {};
       }
 
-      return data.objectCells_[object[keys.id]];
+      return objectCells[object[idKey]];
     },
 
     getOrCreateCellByCellPosition = function getOrCreateCellByCellPosition(position) {
       var key = position.toString();
 
-      if (!data.cells_[key]) {
-        data.cells_[key] = new Grid2Cell(key, position);
+      if (!cells[key]) {
+        cells[key] = new Grid2Cell(key, position);
       }
 
-      return data.cells_[key];
+      return cells[key];
     },
 
     getOrCreateCellByPosition = function getOrCreateCellByPosition(position) {
@@ -97,46 +75,46 @@ Grid2 = function Grid2(size, cellSize) {
       position  = getCellBegPosition(position);
       key       = position.toString();
 
-      if (!data.cells_[key]) {
-        data.cells_[key] = new Grid2Cell(key, position);
+      if (!cells[key]) {
+        cells[key] = new Grid2Cell(key, position);
       }
 
-      return data.cells_[key];
+      return cells[key];
     },
 
     getOrCreateCellsByObject = function getOrCreateCellsByObject(object) {
       var
         key,
         position,
-        cells             = {},
-        objectBegPosition = object[keys.position].subtract(object[keys.halfSize], true),
-        objectEndPosition = object[keys.position].add(object[keys.halfSize], true).subtract(unit),
+        objectCells       = {},
+        objectBegPosition = object[positionKey].subtract(object[halfSizeKey], true),
+        objectEndPosition = object[positionKey].add(object[halfSizeKey], true).subtract(UNIT),
         cellBegPosition   = getCellBegPosition(objectBegPosition),
         cellEndPosition   = getCellBegPosition(objectEndPosition);
 
       // As the lower/right side of a cell is considered as the beginning of the neighbour cell
-      // we need to subtract one unit from the end position of the object, otherwise it will be registered
+      // we need to subtract one UNIT from the end position of the object, otherwise it will be registered
       // twice, see how objectEndPosition is calculated.
       // +) Not sure if this is the right way, but in my game use case, it is.
 
-      for (position = cellBegPosition.clone(); position.x <= cellEndPosition.x; position.x += data.cellSize_.x) {
-        for (position.y = cellBegPosition.y; position.y <= cellEndPosition.y; position.y += data.cellSize_.y) {
-          key = position.toString();
-          if (!data.cells_[key]) {
-            cells[key] = data.cells_[key] = new Grid2Cell(key, position);
-          } else {
-            cells[key] = data.cells_[key];
+      for (position = cellBegPosition.clone(); position.x <= cellEndPosition.x; position.x += cellSize.x) {
+        for (position.y = cellBegPosition.y; position.y <= cellEndPosition.y; position.y += cellSize.y) {
+          key               = position.toString();
+          objectCells[key]  = cells[key];
+
+          if (!objectCells[key]) {
+            objectCells[key] = cells[key] = new Grid2Cell(key, position);
           }
         }
       }
 
-      return cells;
+      return objectCells;
     },
 
     getCellBegPosition = function getCellBegPosition(position) {
       return new Vec2(
-        Math.floor(position.x / data.cellSize_.x) * data.cellSize_.x,
-        Math.floor(position.y / data.cellSize_.y) * data.cellSize_.y
+        Math.floor(position.x / cellSize.x) * cellSize.x,
+        Math.floor(position.y / cellSize.y) * cellSize.y
       );
     },
 
@@ -149,7 +127,7 @@ Grid2 = function Grid2(size, cellSize) {
 
       var nextCell,
           nextCellPosition  = cell.begPosition_.add(diff, true),
-          rotatedDiff       = diff.rotate(halfPI, false, true);
+          rotatedDiff       = diff.rotate(HALF_PI, false, true);
 
       // Use the given direction differnce and recall the function.
       nextCell = getOrCreateCellByCellPosition(nextCellPosition);
@@ -163,22 +141,9 @@ Grid2 = function Grid2(size, cellSize) {
       propagateCallbackOnGrid(nextCell, diff.clone(), cb, cbMemory);
     },
 
-    setSize = function setSize(size) {
-      MyHelper.validateVec2(size);
-
-      data.size_ = new Vec2(size.x, size.y);
-    },
-
-    setCellSize = function setCellSize(cellSize) {
-      MyHelper.validateVec2(cellSize);
-
-      data.cellSize_      = new Vec2(cellSize.x, cellSize.y);
-      data.cellHalfSize_  = data.cellSize_.multiply(0.5, true);
-    },
-
     setObjId = function setObjId(object) {
-      if (!object[keys.id]) {
-        object[keys.id] = nextId();
+      if (!object[idKey]) {
+        object[idKey] = nextId();
       }
     },
 
@@ -187,36 +152,36 @@ Grid2 = function Grid2(size, cellSize) {
         cell,
         cellId,
         dirt     = false,
-        cells    = getObjectCells(object),
+        oldCells = getObjectCells(object),
         newCells = getOrCreateCellsByObject(object);
-      
-      for (cellId in cells) {
+
+      for (cellId in oldCells) {
         if (newCells[cellId]) {
           continue;
         }
 
         dirt  = true;
-        cell  = cells[cellId];
+        cell  = oldCells[cellId];
 
         // Remove the object from the cell.
-        delete cell.objects_[object[keys.id]];
+        delete cell.objects[object[idKey]];
 
         // Remove the cell from the objects-cell index.
-        delete cells[cellId];
+        delete oldCells[cellId];
       }
 
       for (cellId in newCells) {
-        if (cells[cellId]) {
+        if (oldCells[cellId]) {
           continue;
         }
 
         dirt                            = true;
         cell                            = newCells[cellId];
-        cell.objects_[object[keys.id]]  = object;
-        cells[cellId]                   = cell;
+        cell.objects[object[idKey]]   = object;
+        oldCells[cellId]                = cell;
       }
 
-      dirty(dirt);
+      setDirty(dirt);
     },
 
     /**
@@ -225,9 +190,8 @@ Grid2 = function Grid2(size, cellSize) {
 
     addObject = function addObject(object) {
       setObjId(object);
-      checkObjectKeys(object);
       updateObjectCells(object);
-      data.objects_[object[keys.id]] = object;
+      objects[object[idKey]] = object;
     },
 
     addObjects = function addObjects(objects) {
@@ -236,41 +200,20 @@ Grid2 = function Grid2(size, cellSize) {
       }
     },
 
-    debug = function debug(exposed, debugging) {
-      if (exposed !== undefined) {
-        data.exposed_   = !!exposed;
-        data.debugging_ = !!debugging;
-
-        // TODO
-        // for (var fnName in priv) {
-        //   this[fnName] = data.exposed_ ? priv[fnName] : undefined;
-        // }
-
-        this.data_ = data.exposed_ ? data : undefined;
-      }
-
-      return data.debugging_;
-    },
-
     getMetaOn = function getMetaOn(position, key) {
-      MyHelper.validateVec2(position);
-
       var cell;
 
       position = getCellBegPosition(position);
-      cell = data.cells_[position.toString()];
+      cell = cells[position.toString()];
 
       return cell && cell.meta_[key];
     },
 
     getObjects = function getObjects() {
-      return data.objects_;
+      return objects;
     },
 
     getObjectsBetween = function getObjectsBetween(begPosition, endPosition) {
-      MyHelper.validateVec2(begPosition);
-      MyHelper.validateVec2(endPosition);
-
       var
         cell,
         position,
@@ -284,40 +227,38 @@ Grid2 = function Grid2(size, cellSize) {
         return cached;
       }
 
-      for (position = betweenBegPosition.clone(); position.x <= betweenEndPosition.x; position.x += data.cellSize_.x) {
-        for (position.y = betweenBegPosition.y; position.y <= betweenEndPosition.y; position.y += data.cellSize_.y) {
-          cell = data.cells_[position.toString()];
+      for (position = betweenBegPosition.clone(); position.x <= betweenEndPosition.x; position.x += cellSize.x) {
+        for (position.y = betweenBegPosition.y; position.y <= betweenEndPosition.y; position.y += cellSize.y) {
+          cell = cells[position.toString()];
 
           if (!cell) { continue; }
 
-          for (var id in cell.objects_) {
-            objects[id] = cell.objects_[id];
+          for (var id in cell.objects) {
+            objects[id] = cell.objects[id];
           }
         }
       }
 
-      cache('between', cacheKey, objects);
+      cacheObjects('between', cacheKey, objects);
 
       return objects;
     },
 
     getObjectsOn = function getObjectsOn(position) {
-        MyHelper.validateVec2(position);
-
         var cell;
 
         position = getCellBegPosition(position);
-        cell = data.cells_[position.toString()];
+        cell = cells[position.toString()];
 
-        return cell && cell.objects_;
+        return cell && cell.objects;
     },
 
     getCellSize = function getCellSize() {
-      return data.cellSize_.clone();
+      return cellSize.clone();
     },
 
     getSize = function getSize() {
-      return data.size_.clone();
+      return size.clone();
     },
 
     hasObjectsOn = function hasObjectsOn(position) {
@@ -327,26 +268,23 @@ Grid2 = function Grid2(size, cellSize) {
     },
 
     propagateCallbackFromPoint = function propagateCallbackFromPoint(position, cb, cbThis, cbConfig) {
-      MyHelper.validateVec2(position);
-
       var
         cell          = getOrCreateCellByPosition(position),
         cbMemory      = { cbConfig : cbConfig, cbThis : cbThis };
 
-      propagateCallbackOnGrid(cell, new Vec2( data.cellSize_.x, 0), cb, cbMemory);
+      propagateCallbackOnGrid(cell, new Vec2( cellSize.x, 0), cb, cbMemory);
       delete cbMemory[cell.id_];
 
-      propagateCallbackOnGrid(cell, new Vec2(-data.cellSize_.x, 0), cb, cbMemory);
+      propagateCallbackOnGrid(cell, new Vec2(-cellSize.x, 0), cb, cbMemory);
       delete cbMemory[cell.id_];
 
-      propagateCallbackOnGrid(cell, new Vec2(0,  data.cellSize_.y), cb, cbMemory);
+      propagateCallbackOnGrid(cell, new Vec2(0,  cellSize.y), cb, cbMemory);
       delete cbMemory[cell.id_];
 
-      propagateCallbackOnGrid(cell, new Vec2(0, -data.cellSize_.y), cb, cbMemory);
+      propagateCallbackOnGrid(cell, new Vec2(0, -cellSize.y), cb, cbMemory);
     },
 
     updateObject = function updateObject(object) {
-      checkObjectKeys(object, true);
       updateObjectCells(object);
     },
 
@@ -357,15 +295,23 @@ Grid2 = function Grid2(size, cellSize) {
     },
 
     setMetaOn = function setMetaOn(position, key, val) {
-      MyHelper.validateVec2(position);
-
       var cell = getOrCreateCellByPosition(position);
 
       cell.meta_[key] = val;
+    },
+
+    debug = function debug() {
+      this.objects  = objects;
+      this.cells    = cells;
+    },
+
+    init = function init(config) {
+      size          = config.size.clone();
+      cellSize      = config.cellSize.clone();
+      cellHalfSize  = cellSize.multiply(0.5, true);
     };
 
-  setSize(size);
-  setCellSize(cellSize);
+  init(config);
 
   this.addObject                  = addObject;
   this.addObjects                 = addObjects;
