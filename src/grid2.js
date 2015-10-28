@@ -20,12 +20,11 @@ Grid2 = function Grid2(config) {
     HALF_PI       = Math.PI / 2,
 
     Grid2Cell = function Grid2Cell(id, position) {
-      this.id_          = id;
-      this.begPosition_ = position.clone();
-      this.center_      = this.begPosition_.add(cellHalfSize, true);
-      this.endPosition_ = this.begPosition_.add(cellSize, true);
-      this.objects      = {};
-      this.meta_        = {};
+      this.id          = id;
+      this.begPosition = position.clone();
+      this.center      = this.begPosition.add(cellHalfSize, true);
+      this.objects     = {};
+      this.meta        = {};
     },
 
     cacheObjects = function cacheObjects(type, key, objects) {
@@ -119,14 +118,14 @@ Grid2 = function Grid2(config) {
     },
 
     propagateCallbackOnGrid = function propagateCallbackOnGrid(cell, diff, cb, cbMemory) {
-      if (cbMemory[cell.id_]) { return; }
+      if (cbMemory[cell.id]) { return; }
 
-      cbMemory[cell.id_] = true;
+      cbMemory[cell.id] = true;
 
-      if (!cb.call(cbMemory.cbThis, cbMemory.cbConfig, cell.center_)) { return; }
+      if (!cb.call(cbMemory.cbThis, cbMemory.cbConfig, cell.center)) { return; }
 
       var nextCell,
-          nextCellPosition  = cell.begPosition_.add(diff, true),
+          nextCellPosition  = cell.begPosition.add(diff, true),
           rotatedDiff       = diff.rotate(HALF_PI, false, true);
 
       // Use the given direction differnce and recall the function.
@@ -206,7 +205,7 @@ Grid2 = function Grid2(config) {
       position = getCellBegPosition(position);
       cell = cells[position.toString()];
 
-      return cell && cell.meta_[key];
+      return cell && cell.meta[key];
     },
 
     getObjects = function getObjects() {
@@ -273,13 +272,13 @@ Grid2 = function Grid2(config) {
         cbMemory      = { cbConfig : cbConfig, cbThis : cbThis };
 
       propagateCallbackOnGrid(cell, new Vec2( cellSize.x, 0), cb, cbMemory);
-      delete cbMemory[cell.id_];
+      delete cbMemory[cell.id];
 
       propagateCallbackOnGrid(cell, new Vec2(-cellSize.x, 0), cb, cbMemory);
-      delete cbMemory[cell.id_];
+      delete cbMemory[cell.id];
 
       propagateCallbackOnGrid(cell, new Vec2(0,  cellSize.y), cb, cbMemory);
-      delete cbMemory[cell.id_];
+      delete cbMemory[cell.id];
 
       propagateCallbackOnGrid(cell, new Vec2(0, -cellSize.y), cb, cbMemory);
     },
@@ -297,7 +296,7 @@ Grid2 = function Grid2(config) {
     setMetaOn = function setMetaOn(position, key, val) {
       var cell = getOrCreateCellByPosition(position);
 
-      cell.meta_[key] = val;
+      cell.meta[key] = val;
     },
 
     debug = function debug() {

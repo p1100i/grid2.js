@@ -67,8 +67,7 @@ describe('Grid2', function(){
       });
 
       it('should register cells in data', function() {
-        this.grid.cells[key(10, 10)].begPosition_.x.should.eql(10);
-        this.grid.cells[key(10, 10)].endPosition_.y.should.eql(20);
+        this.grid.cells[key(10, 10)].begPosition.x.should.eql(10);
       });
 
       it('should register the object for the cell in data', function() {
