@@ -146,6 +146,14 @@ describe('Grid2', function(){
     });
   });
 
+  describe('.updateObjects()', function() {
+  });
+
+  describe('.getObjectsOn()', function() {
+    it('should be tested');
+  });
+
+
   describe('.getObjectsBetween()', function() {
     context('without objects', function() {
       it('should return {}', function() {
@@ -214,11 +222,7 @@ describe('Grid2', function(){
     });
   });
 
-  describe('.getOrCreateCell()', function() {
-    it('should be tested');
-  });
-
-  describe('.getMetaOn()', function() {
+  describe('.propagateCallbackFromPoint() ', function() {
     it('should be tested');
   });
 
@@ -226,7 +230,7 @@ describe('Grid2', function(){
     it('should be tested');
   });
 
-  describe('.propagateCallbackFromPoint() ', function() {
+  describe('.getMetaOn()', function() {
     it('should be tested');
   });
 });
