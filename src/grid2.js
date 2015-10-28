@@ -210,15 +210,6 @@ Grid2 = function Grid2(config) {
       }
     },
 
-    getMetaOn = function getMetaOn(position, key) {
-      var cell;
-
-      position = getCellBegPosition(position);
-      cell = cells[position.toString()];
-
-      return cell && cell.meta[key];
-    },
-
     getObjectsBetween = function getObjectsBetween(begPosition, endPosition) {
       var
         id,
@@ -269,14 +260,6 @@ Grid2 = function Grid2(config) {
         return objects;
     },
 
-    getCellSize = function getCellSize() {
-      return cellSize.clone();
-    },
-
-    getSize = function getSize() {
-      return size.clone();
-    },
-
     hasObjectsOn = function hasObjectsOn(position) {
       var objects = getObjectsOn(position);
 
@@ -285,8 +268,11 @@ Grid2 = function Grid2(config) {
 
     propagateCallbackFromPoint = function propagateCallbackFromPoint(position, cb, cbThis, cbConfig) {
       var
-        cell          = getOrCreateCellByPosition(position),
-        cbMemory      = { cbConfig : cbConfig, cbThis : cbThis };
+        cell      = getOrCreateCellByPosition(position),
+        cbMemory  = {
+          'cbConfig'  : cbConfig,
+          'cbThis'    : cbThis
+        };
 
       propagateCallbackOnGrid(cell, new Vec2( cellSize.x, 0), cb, cbMemory);
       delete cbMemory[cell.id];
@@ -319,6 +305,16 @@ Grid2 = function Grid2(config) {
       cell.meta[key] = val;
     },
 
+    getMetaOn = function getMetaOn(position, key) {
+      var cell;
+
+      position  = getCellBegPosition(position);
+      cell      = cells[position.toString()];
+
+      return cell && cell.meta[key];
+    },
+
+
     inspect = function inspect() {
       return {
         'objects' : objects,
@@ -336,16 +332,14 @@ Grid2 = function Grid2(config) {
 
   this.addObject                  = addObject;
   this.addObjects                 = addObjects;
-  this.getMetaOn                  = getMetaOn;
   this.getObjectsOn               = getObjectsOn;
   this.getObjectsBetween          = getObjectsBetween;
-  this.getCellSize                = getCellSize;
-  this.getSize                    = getSize;
   this.hasObjectsOn               = hasObjectsOn;
   this.propagateCallbackFromPoint = propagateCallbackFromPoint;
   this.updateObject               = updateObject;
   this.updateObjects              = updateObjects;
   this.setMetaOn                  = setMetaOn;
+  this.getMetaOn                  = getMetaOn;
   this.inspect                    = inspect;
 
   return this;
