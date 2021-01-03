@@ -63,6 +63,13 @@ Grid2 = function Grid2(config) {
       return objectCells[object[idKey]];
     },
 
+    getCellBegPosition = function getCellBegPosition(position) {
+      return new Vec2(
+        Math.floor(position.x / cellSize.x) * cellSize.x,
+        Math.floor(position.y / cellSize.y) * cellSize.y
+      );
+    },
+
     getOrCreateCellByPosition = function getOrCreateCellByPosition(position) {
       var key;
 
@@ -105,13 +112,6 @@ Grid2 = function Grid2(config) {
       }
 
       return objectCells;
-    },
-
-    getCellBegPosition = function getCellBegPosition(position) {
-      return new Vec2(
-        Math.floor(position.x / cellSize.x) * cellSize.x,
-        Math.floor(position.y / cellSize.y) * cellSize.y
-      );
     },
 
     setObjId = function setObjId(object) {
