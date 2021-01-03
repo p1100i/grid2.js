@@ -1,8 +1,8 @@
 {
   "name": "grid2",
   "description": "JavaScript implementation of a static spatial grid index in two dimension.",
-  "author": "peters <p1100i.dev@gmail.com>",
   "version": "0.5.0",
+  "author": "peters <p1100i@gmx.com>",
   "main": "src/grid2.js",
   "license": "MIT",
   "licenseUrl": "http://www.opensource.org/licenses/mit-license.php",
