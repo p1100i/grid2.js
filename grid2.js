@@ -1,65 +1,64 @@
 /**
  * @license
- * grid2 - v0.5.0
+ * grid2 - v0.6.0
  * Copyright (c) 2015 p1100i
  * https://github.com/p1100i/grid2.js
  *
- * Compiled: 2015-10-29
+ * Compiled: 2021-01-03
  *
  * grid2 is licensed under the MIT License.
  * http://www.opensource.org/licenses/mit-license.php
  */
-!function a(b, c, d) {
-    function e(g, h) {
-        if (!c[g]) {
-            if (!b[g]) {
-                var i = "function" == typeof require && require;
-                if (!h && i) return i(g, !0);
-                if (f) return f(g, !0);
-                var j = new Error("Cannot find module '" + g + "'");
-                throw j.code = "MODULE_NOT_FOUND", j;
+
+!function e(i, s, o) {
+    function u(n, t) {
+        if (!s[n]) {
+            if (!i[n]) {
+                var r = "function" == typeof require && require;
+                if (!t && r) return r(n, !0);
+                if (h) return h(n, !0);
+                throw (r = new Error("Cannot find module '" + n + "'")).code = "MODULE_NOT_FOUND", r;
             }
-            var k = c[g] = {
+            r = s[n] = {
                 exports: {}
-            };
-            b[g][0].call(k.exports, function(a) {
-                var c = b[g][1][a];
-                return e(c ? c : a);
-            }, k, k.exports, a, b, c, d);
+            }, i[n][0].call(r.exports, function(t) {
+                return u(i[n][1][t] || t);
+            }, r, r.exports, e, i, s, o);
         }
-        return c[g].exports;
+        return s[n].exports;
     }
-    for (var f = "function" == typeof require && require, g = 0; g < d.length; g++) e(d[g]);
-    return e;
+    for (var h = "function" == typeof require && require, t = 0; t < o.length; t++) u(o[t]);
+    return u;
 }({
-    1: [ function(a, b, c) {
-        Grid2 = a("./src/grid2");
+    1: [ function(t, n, r) {
+        Grid2 = t("./src/grid2");
     }, {
         "./src/grid2": 3
     } ],
-    2: [ function(a, b, c) {
-        !function d(a, c, e) {
-            function f(a, b) {
-                return this instanceof f ? (g(a) ? (b = a[1], a = a[0]) : "object" == typeof a && a && (b = a.y, a = a.x), 
-                this.x = f.clean(a || 0), void (this.y = f.clean(b || 0))) : new f(a, b);
-            }
-            var g = function(a) {
-                return "[object Array]" === Object.prototype.toString.call(a);
+    2: [ function(t, u, n) {
+        !function t(n, r, e) {
+            var i = function(t) {
+                return "[object Array]" === Object.prototype.toString.call(t);
             };
-            f.prototype = {
-                change: function(a) {
-                    if ("function" == typeof a) this.observers ? this.observers.push(a) : this.observers = [ a ]; else if (this.observers && this.observers.length) for (var b = this.observers.length - 1; b >= 0; b--) this.observers[b](this, a);
+            function s(t, n) {
+                if (!(this instanceof s)) return new s(t, n);
+                i(t) ? (n = t[1], t = t[0]) : "object" == typeof t && t && (n = t.y, t = t.x), this.x = s.clean(t || 0), 
+                this.y = s.clean(n || 0);
+            }
+            s.prototype = {
+                change: function(t) {
+                    if ("function" == typeof t) this.observers ? this.observers.push(t) : this.observers = [ t ]; else if (this.observers && this.observers.length) for (var n = this.observers.length - 1; 0 <= n; n--) this.observers[n](this, t);
                     return this;
                 },
-                ignore: function(a) {
-                    if (this.observers) if (a) for (var b = this.observers, c = b.length; c--; ) b[c] === a && b.splice(c, 1); else this.observers = [];
+                ignore: function(t) {
+                    if (this.observers) if (t) for (var n = this.observers, r = n.length; r--; ) n[r] === t && n.splice(r, 1); else this.observers = [];
                     return this;
                 },
-                set: function(a, b, c) {
-                    if ("number" != typeof a && (c = b, b = a.y, a = a.x), this.x === a && this.y === b) return this;
-                    var d = null;
-                    return c !== !1 && this.observers && this.observers.length && (d = this.clone()), this.x = f.clean(a), 
-                    this.y = f.clean(b), c !== !1 ? this.change(d) : void 0;
+                set: function(t, n, r) {
+                    if ("number" != typeof t && (r = n, n = t.y, t = t.x), this.x === t && this.y === n) return this;
+                    var e = null;
+                    return !1 !== r && this.observers && this.observers.length && (e = this.clone()), this.x = s.clean(t), 
+                    this.y = s.clean(n), !1 !== r ? this.change(e) : void 0;
                 },
                 zero: function() {
                     return this.set(0, 0);
@@ -67,94 +66,94 @@
                 clone: function() {
                     return new this.constructor(this.x, this.y);
                 },
-                negate: function(a) {
-                    return a ? new this.constructor(-this.x, -this.y) : this.set(-this.x, -this.y);
+                negate: function(t) {
+                    return t ? new this.constructor(-this.x, -this.y) : this.set(-this.x, -this.y);
                 },
-                add: function(a, b, c) {
-                    return "number" != typeof a && (c = b, g(a) ? (b = a[1], a = a[0]) : (b = a.y, a = a.x)), a += this.x, 
-                    b += this.y, c ? new this.constructor(a, b) : this.set(a, b);
+                add: function(t, n, r) {
+                    return "number" != typeof t && (r = n, t = i(t) ? (n = t[1], t[0]) : (n = t.y, t.x)), t += this.x, n += this.y, 
+                    r ? new this.constructor(t, n) : this.set(t, n);
                 },
-                subtract: function(a, b, c) {
-                    return "number" != typeof a && (c = b, g(a) ? (b = a[1], a = a[0]) : (b = a.y, a = a.x)), a = this.x - a, 
-                    b = this.y - b, c ? new this.constructor(a, b) : this.set(a, b);
+                subtract: function(t, n, r) {
+                    return "number" != typeof t && (r = n, t = i(t) ? (n = t[1], t[0]) : (n = t.y, t.x)), t = this.x - t, 
+                    n = this.y - n, r ? new this.constructor(t, n) : this.set(t, n);
                 },
-                multiply: function(a, b, c) {
-                    return "number" != typeof a ? (c = b, g(a) ? (b = a[1], a = a[0]) : (b = a.y, a = a.x)) : "number" != typeof b && (c = b, 
-                    b = a), a *= this.x, b *= this.y, c ? new this.constructor(a, b) : this.set(a, b);
+                multiply: function(t, n, r) {
+                    return "number" != typeof t ? (r = n, t = i(t) ? (n = t[1], t[0]) : (n = t.y, t.x)) : "number" != typeof n && (r = n, 
+                    n = t), t *= this.x, n *= this.y, r ? new this.constructor(t, n) : this.set(t, n);
                 },
-                rotate: function(a, b, c) {
-                    var d, e, f = this.x, g = this.y, h = Math.cos(a), i = Math.sin(a);
-                    return b = b ? -1 : 1, d = h * f - b * i * g, e = b * i * f + h * g, c ? new this.constructor(d, e) : this.set(d, e);
+                rotate: function(t, n, r) {
+                    var e = this.x, i = this.y, s = Math.cos(t), o = Math.sin(t), t = s * e - (n = n ? -1 : 1) * o * i, i = n * o * e + s * i;
+                    return r ? new this.constructor(t, i) : this.set(t, i);
                 },
                 length: function() {
-                    var a = this.x, b = this.y;
-                    return Math.sqrt(a * a + b * b);
+                    var t = this.x, n = this.y;
+                    return Math.sqrt(t * t + n * n);
                 },
                 lengthSquared: function() {
-                    var a = this.x, b = this.y;
-                    return a * a + b * b;
+                    var t = this.x, n = this.y;
+                    return t * t + n * n;
                 },
-                distance: function(a) {
-                    var b = this.x - a.x, c = this.y - a.y;
-                    return Math.sqrt(b * b + c * c);
+                distance: function(t) {
+                    var n = this.x - t.x, t = this.y - t.y;
+                    return Math.sqrt(n * n + t * t);
                 },
-                nearest: function(a) {
-                    for (var b, c = Number.MAX_VALUE, d = null, e = a.length - 1; e >= 0; e--) b = this.distance(a[e]), 
-                    c >= b && (c = b, d = a[e]);
-                    return d;
+                nearest: function(t) {
+                    for (var n, r = Number.MAX_VALUE, e = null, i = t.length - 1; 0 <= i; i--) (n = this.distance(t[i])) <= r && (r = n, 
+                    e = t[i]);
+                    return e;
                 },
-                normalize: function(a) {
-                    var b = this.length(), c = b < Number.MIN_VALUE ? 0 : 1 / b;
-                    return a ? new this.constructor(this.x * c, this.y * c) : this.set(this.x * c, this.y * c);
+                normalize: function(t) {
+                    var n = this.length(), n = n < Number.MIN_VALUE ? 0 : 1 / n;
+                    return t ? new this.constructor(this.x * n, this.y * n) : this.set(this.x * n, this.y * n);
                 },
-                equal: function(a, b) {
-                    return "number" != typeof a && (g(a) ? (b = a[1], a = a[0]) : (b = a.y, a = a.x)), f.clean(a) === this.x && f.clean(b) === this.y;
+                equal: function(t, n) {
+                    return "number" != typeof t && (t = i(t) ? (n = t[1], t[0]) : (n = t.y, t.x)), s.clean(t) === this.x && s.clean(n) === this.y;
                 },
-                abs: function(a) {
-                    var b = Math.abs(this.x), c = Math.abs(this.y);
-                    return a ? new this.constructor(b, c) : this.set(b, c);
+                abs: function(t) {
+                    var n = Math.abs(this.x), r = Math.abs(this.y);
+                    return t ? new this.constructor(n, r) : this.set(n, r);
                 },
-                min: function(a, b) {
-                    var c = this.x, d = this.y, e = a.x, f = a.y, g = e > c ? c : e, h = f > d ? d : f;
-                    return b ? new this.constructor(g, h) : this.set(g, h);
+                min: function(t, n) {
+                    var r = this.x, e = this.y, i = t.x, t = t.y, i = r < i ? r : i, t = e < t ? e : t;
+                    return n ? new this.constructor(i, t) : this.set(i, t);
                 },
-                max: function(a, b) {
-                    var c = this.x, d = this.y, e = a.x, f = a.y, g = c > e ? c : e, h = d > f ? d : f;
-                    return b ? new this.constructor(g, h) : this.set(g, h);
+                max: function(t, n) {
+                    var r = this.x, e = this.y, i = t.x, t = t.y, i = i < r ? r : i, t = t < e ? e : t;
+                    return n ? new this.constructor(i, t) : this.set(i, t);
                 },
-                clamp: function(a, b, c) {
-                    var d = this.min(b, !0).max(a);
-                    return c ? d : this.set(d.x, d.y);
+                clamp: function(t, n, r) {
+                    t = this.min(n, !0).max(t);
+                    return r ? t : this.set(t.x, t.y);
                 },
-                lerp: function(a, b, c) {
-                    return this.add(a.subtract(this, !0).multiply(b), c);
+                lerp: function(t, n, r) {
+                    return this.add(t.subtract(this, !0).multiply(n), r);
                 },
-                skew: function(a) {
-                    return a ? new this.constructor(-this.y, this.x) : this.set(-this.y, this.x);
+                skew: function(t) {
+                    return t ? new this.constructor(-this.y, this.x) : this.set(-this.y, this.x);
                 },
-                dot: function(a) {
-                    return f.clean(this.x * a.x + a.y * this.y);
+                dot: function(t) {
+                    return s.clean(this.x * t.x + t.y * this.y);
                 },
-                perpDot: function(a) {
-                    return f.clean(this.x * a.y - this.y * a.x);
+                perpDot: function(t) {
+                    return s.clean(this.x * t.y - this.y * t.x);
                 },
-                angleTo: function(a) {
-                    return Math.atan2(this.perpDot(a), this.dot(a));
+                angleTo: function(t) {
+                    return Math.atan2(this.perpDot(t), this.dot(t));
                 },
-                divide: function(a, b, c) {
-                    if ("number" != typeof a ? (c = b, g(a) ? (b = a[1], a = a[0]) : (b = a.y, a = a.x)) : "number" != typeof b && (c = b, 
-                    b = a), 0 === a || 0 === b) throw new Error("division by zero");
-                    if (isNaN(a) || isNaN(b)) throw new Error("NaN detected");
-                    return c ? new this.constructor(this.x / a, this.y / b) : this.set(this.x / a, this.y / b);
+                divide: function(t, n, r) {
+                    if ("number" != typeof t ? (r = n, t = i(t) ? (n = t[1], t[0]) : (n = t.y, t.x)) : "number" != typeof n && (r = n, 
+                    n = t), 0 === t || 0 === n) throw new Error("division by zero");
+                    if (isNaN(t) || isNaN(n)) throw new Error("NaN detected");
+                    return r ? new this.constructor(this.x / t, this.y / n) : this.set(this.x / t, this.y / n);
                 },
-                isPointOnLine: function(a, b) {
-                    return (a.y - this.y) * (a.x - b.x) === (a.y - b.y) * (a.x - this.x);
+                isPointOnLine: function(t, n) {
+                    return (t.y - this.y) * (t.x - n.x) == (t.y - n.y) * (t.x - this.x);
                 },
                 toArray: function() {
                     return [ this.x, this.y ];
                 },
-                fromArray: function(a) {
-                    return this.set(a[0], a[1]);
+                fromArray: function(t) {
+                    return this.set(t[0], t[1]);
                 },
                 toJSON: function() {
                     return {
@@ -165,102 +164,87 @@
                 toString: function() {
                     return "(" + this.x + ", " + this.y + ")";
                 },
-                constructor: f
-            }, f.fromArray = function(a, b) {
-                return new (b || f)(a[0], a[1]);
-            }, f.precision = c || 8;
-            var h = Math.pow(10, f.precision);
-            return f.clean = a || function(a) {
-                if (isNaN(a)) throw new Error("NaN detected");
-                if (!isFinite(a)) throw new Error("Infinity detected");
-                return Math.round(a) === a ? a : Math.round(a * h) / h;
-            }, f.inject = d, a || (f.fast = d(function(a) {
-                return a;
-            }), "undefined" != typeof b && "object" == typeof b.exports ? b.exports = f : window.Vec2 = window.Vec2 || f), 
-            f;
+                constructor: s
+            }, s.fromArray = function(t, n) {
+                return new (n || s)(t[0], t[1]);
+            }, s.precision = r || 8;
+            var o = Math.pow(10, s.precision);
+            return s.clean = n || function(t) {
+                if (isNaN(t)) throw new Error("NaN detected");
+                if (!isFinite(t)) throw new Error("Infinity detected");
+                return Math.round(t) === t ? t : Math.round(t * o) / o;
+            }, s.inject = t, n || (s.fast = t(function(t) {
+                return t;
+            }), void 0 !== u && "object" == typeof u.exports ? u.exports = s : window.Vec2 = window.Vec2 || s), 
+            s;
         }();
     }, {} ],
-    3: [ function(a, b, c) {
-        var d, e = a("vec2");
-        d = function(a) {
-            var b, c, d, f = 1, g = {}, h = {}, i = {}, j = 1, k = "id", l = "pos", m = "rad", n = new e(1, 1), o = {
+    3: [ function(t, n, r) {
+        var p = t("vec2"), t = function(t) {
+            function h(t, n) {
+                this.id = t, this.begPosition = n.clone(), this.center = this.begPosition.add(o, !0), this.objects = {}, 
+                this.meta = {};
+            }
+            function c(t) {
+                return new p(Math.floor(t.x / f.x) * f.x, Math.floor(t.y / f.y) * f.y);
+            }
+            function n(t) {
+                t.id || (t.id = a++);
+            }
+            function r(t) {
+                var n, r, e, i = !1, s = (l[(e = t).id] || (l[e.id] = {}), l[e.id]), o = function(t) {
+                    for (var n, r = {}, e = t.rad, i = t.pos, t = i.subtract(e, e, !0), e = i.add(e, e, !0).subtract(b), s = c(t), o = c(e), u = s.clone(); u.x <= o.x; u.x += f.x) for (u.y = s.y; u.y <= o.y; u.y += f.y) r[n = u.toString()] = x[n], 
+                    r[n] || (r[n] = x[n] = new h(n, u));
+                    return r;
+                }(t);
+                for (r in s) o[r] || (i = !0, delete (n = s[r]).objects[t.id], delete s[r]);
+                for (r in o) s[r] || (i = !0, (n = o[r]).objects[t.id] = t, s[r] = n);
+                i && d++;
+            }
+            function e(t) {
+                n(t), r(t), y[t.id] = t;
+            }
+            function i(t) {
+                var n, r, e = {};
+                for (n in t = c(t), r = (t = x[t.toString()]) && t.objects) e[n] = r[n];
+                return e;
+            }
+            function s(t) {
+                r(t);
+            }
+            var f, o, u, a = 1, y = {}, x = {}, l = {}, d = 1, b = new p(1, 1), v = {
                 between: {
                     dirty: 0,
                     queries: {}
                 }
-            }, p = function(a, b) {
-                this.id = a, this.begPosition = b.clone(), this.center = this.begPosition.add(d, !0), this.objects = {}, 
-                this.meta = {};
-            }, q = function(a, b, c) {
-                o[a].dirty = j, o[a].queries[b] = c;
-            }, r = function(a, b) {
-                return o[a].dirty === j && o[a].queries[b] ? o[a].queries[b] : void 0;
-            }, s = function(a, b) {
-                return a.toString() + "_" + b.toString();
-            }, t = function(a) {
-                a && j++;
-            }, u = function() {
-                return f++;
-            }, v = function(a) {
-                return i[a[k]] || (i[a[k]] = {}), i[a[k]];
-            }, w = function(a) {
-                var b;
-                return a = y(a), b = a.toString(), h[b] || (h[b] = new p(b, a)), h[b];
-            }, x = function(a) {
-                var b, d, e = {}, f = a[m], g = a[l], i = g.subtract(f, f, !0), j = g.add(f, f, !0).subtract(n), k = y(i), o = y(j);
-                for (d = k.clone(); d.x <= o.x; d.x += c.x) for (d.y = k.y; d.y <= o.y; d.y += c.y) b = d.toString(), 
-                e[b] = h[b], e[b] || (e[b] = h[b] = new p(b, d));
-                return e;
-            }, y = function(a) {
-                return new e(Math.floor(a.x / c.x) * c.x, Math.floor(a.y / c.y) * c.y);
-            }, z = function(a) {
-                a[k] || (a[k] = u());
-            }, A = function(a) {
-                var b, c, d = !1, e = v(a), f = x(a);
-                for (c in e) f[c] || (d = !0, b = e[c], delete b.objects[a[k]], delete e[c]);
-                for (c in f) e[c] || (d = !0, b = f[c], b.objects[a[k]] = a, e[c] = b);
-                t(d);
-            }, B = function(a) {
-                z(a), A(a), g[a[k]] = a;
-            }, C = function(a) {
-                var b;
-                for (b = 0; b < a.length; b++) B(a[b]);
-            }, D = function(a) {
-                var b, c, d, e = {};
-                a = y(a), c = h[a.toString()], d = c && c.objects;
-                for (b in d) e[b] = d[b];
-                return e;
-            }, E = function(a, b) {
-                var d, e, f, g = {}, i = y(a), j = y(b), k = s(i, j), l = r("between", k);
-                if (l) return l;
-                for (f = i.clone(); f.x <= j.x; f.x += c.x) for (f.y = i.y; f.y <= j.y; f.y += c.y) if (e = h[f.toString()]) for (d in e.objects) g[d] = e.objects[d];
-                return q("between", k, g), g;
-            }, F = function(a) {
-                var b = D(a);
-                return !(!b || !Object.keys(b).length);
-            }, G = function(a) {
-                A(a);
-            }, H = function(a) {
-                var b;
-                for (b = 0; b < a.length; b++) G(a[b]);
-            }, I = function(a, b, c) {
-                var d = w(a);
-                d.meta[b] = c;
-            }, J = function(a, b) {
-                var c;
-                return a = y(a), c = h[a.toString()], c && c.meta[b];
-            }, K = function() {
-                return {
-                    objects: g,
-                    cells: h
-                };
-            }, L = function(a) {
-                b = a.size.clone(), c = a.cellSize.clone(), d = c.multiply(.5, !0);
             };
-            return L(a), this.addObject = B, this.addObjects = C, this.getObjectsOn = D, this.getObjectsBetween = E, 
-            this.hasObjectsOn = F, this.updateObject = G, this.updateObjects = H, this.setMetaOn = I, this.getMetaOn = J, 
-            this.inspect = K, this;
-        }, b.exports = d;
+            return (u = t).size.clone(), f = u.cellSize.clone(), o = f.multiply(.5, !0), this.addObject = e, this.addObjects = function(t) {
+                for (var n = 0; n < t.length; n++) e(t[n]);
+            }, this.getObjectsOn = i, this.getObjectsBetween = function(t, n) {
+                var r, e, i, s, o = {}, u = c(t), h = c(n), t = (s = h, u.toString() + "_" + s.toString()), n = function(t, n) {
+                    if (v[t].dirty === d && v[t].queries[n]) return v[t].queries[n];
+                }("between", t);
+                if (n) return n;
+                for (i = u.clone(); i.x <= h.x; i.x += f.x) for (i.y = u.y; i.y <= h.y; i.y += f.y) if (e = x[i.toString()]) for (r in e.objects) o[r] = e.objects[r];
+                return s = t, n = o, v[t = "between"].dirty = d, v[t].queries[s] = n, o;
+            }, this.hasObjectsOn = function(t) {
+                t = i(t);
+                return !(!t || !Object.keys(t).length);
+            }, this.updateObject = s, this.updateObjects = function(t) {
+                for (var n = 0; n < t.length; n++) s(t[n]);
+            }, this.setMetaOn = function(t, n, r) {
+                var e;
+                (t = (e = c(e = t)).toString(), x[t] || (x[t] = new h(t, e)), x[t]).meta[n] = r;
+            }, this.getMetaOn = function(t, n) {
+                return t = c(t), (t = x[t.toString()]) && t.meta[n];
+            }, this.inspect = function() {
+                return {
+                    objects: y,
+                    cells: x
+                };
+            }, this;
+        };
+        n.exports = t;
     }, {
         vec2: 2
     } ]
